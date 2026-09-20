@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SeatSetu — Every seat. Filled. | AI Admissions & Accreditation OS for Colleges</title>
+<meta name="description" content="SeatSetu is the AI back office for tier-3 engineering colleges: an AI counselor that answers parents in Telugu 24×7, NAAC/AQAR autopilot before the Dec 31 deadline, and placement training with proof. At 1/10th the cost of agency CRMs.">
+<link rel="stylesheet" href="/static/brand.css">
+<link rel="icon" type="image/png" href="/static/favicon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32.png">
+<link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+<meta name="theme-color" content="#0D9488">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--text);font-family:var(--font-body)}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+  nav{display:flex;align-items:center;gap:26px;padding:16px 0}
+  nav img{height:40px}
+  nav a.lnk{color:var(--mut);text-decoration:none;font-size:14px;font-weight:500}
+  nav a.lnk:hover{color:var(--teal-deep)}
+  nav .cta{margin-left:auto}
+  .btn{display:inline-block;background:linear-gradient(135deg,#0D9488,#0F766E);color:#fff;text-decoration:none;
+       padding:12px 22px;border-radius:10px;font-weight:600;font-family:var(--font-display);font-size:14.5px;
+       box-shadow:0 4px 14px #0d948840;transition:transform .15s}
+  .btn:hover{transform:translateY(-1px)}
+  .btn.ghost{background:#fff;color:var(--teal-deep);border:1.5px solid var(--line);box-shadow:none}
+  .btn.amber{background:linear-gradient(135deg,#F59E0B,#B45309);box-shadow:0 4px 14px #f59e0b44}
+  header.hero{padding:66px 0 56px;background:
+     radial-gradient(1200px 500px at 85% -10%, #CCFBF166, transparent),
+     radial-gradient(900px 400px at -10% 110%, #FEF3C755, transparent)}
+  .hero h1{font-family:var(--font-display);font-size:56px;line-height:1.06;color:var(--ink);letter-spacing:-1px}
+  .hero h1 span{color:var(--teal)}
+  .hero p.sub{font-size:19px;color:var(--mut);max-width:720px;margin:22px 0 30px;line-height:1.6}
+  .hero .row{display:flex;gap:14px;flex-wrap:wrap}
+  .trust{display:flex;gap:10px;flex-wrap:wrap;margin-top:34px}
+  .trust span{background:#fff;border:1px solid var(--line);color:var(--teal-deep);font-size:12.5px;font-weight:600;
+              padding:7px 14px;border-radius:99px}
+  section{padding:56px 0}
+  h2{font-family:var(--font-display);font-size:32px;color:var(--ink);letter-spacing:-.5px}
+  .kicker{color:var(--amber-deep);font-weight:600;font-size:13px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;font-family:var(--font-display)}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:28px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:26px;box-shadow:0 6px 24px #0b1f1c08;position:relative}
+  .card .tag{position:absolute;top:-12px;right:18px;background:var(--amber);color:#fff;font-size:11px;font-weight:700;
+             padding:4px 12px;border-radius:99px;font-family:var(--font-display)}
+  .card h3{font-family:var(--font-display);font-size:19px;color:var(--ink);margin-bottom:6px}
+  .card .price{font-family:var(--font-display);font-size:15px;color:var(--teal-deep);font-weight:600;margin-bottom:14px}
+  .card ul{list-style:none}
+  .card li{font-size:14px;color:var(--text);padding:5px 0 5px 24px;position:relative;line-height:1.45}
+  .card li:before{content:"✓";position:absolute;left:0;color:var(--teal);font-weight:700}
+  .why{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:26px}
+  .why .w{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px}
+  .why b{font-family:var(--font-display);color:var(--ink);font-size:15px;display:block;margin-bottom:6px}
+  .why p{font-size:13.5px;color:var(--mut);line-height:1.55}
+  .band{background:linear-gradient(135deg,#0D9488,#0F766E);border-radius:22px;color:#fff;padding:44px;margin-top:10px;
+        display:flex;align-items:center;gap:30px;flex-wrap:wrap;justify-content:space-between}
+  .band h2{color:#fff;font-size:28px;max-width:620px;line-height:1.25}
+  .band .btn{background:#fff;color:var(--teal-deep);box-shadow:none}
+  .band .btn.amber{background:var(--amber);color:#fff}
+  footer{padding:40px 0 60px;color:var(--mut);font-size:13.5px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+  footer img{height:30px;opacity:.9}
+  .stat b{font-family:var(--font-display);font-size:26px;color:var(--teal-deep)}
+  .stats{display:flex;gap:44px;flex-wrap:wrap;margin-top:8px}
+  .stats .stat div{font-size:13px;color:var(--mut)}
+  @media(max-width:720px){.hero h1{font-size:38px}}
+  @media(max-width:640px){
+    nav{flex-wrap:wrap;gap:8px}
+    nav .btn,nav .lnk{padding:8px 14px;font-size:13px;white-space:nowrap}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <img src="/static/logo.png" alt="SeatSetu — Every seat. Filled.">
+    <a class="lnk cta" href="/dashboard">Dashboard</a>
+    <a class="btn ghost" href="/widget/1">💬 Chat with the AI counselor</a>
+  </nav>
+
+  <header class="hero">
+    <div class="kicker">SeatSetu Admissions · Accred · Careers</div>
+    <h1>Every seat. <span>Filled.</span></h1>
+    <p class="sub">SeatSetu is the <b>AI back office for engineering &amp; degree colleges</b>: an AI counselor that
+    answers parents in <b>Telugu &amp; English 24×7</b> and never forgets a follow-up, a <b>NAAC/AQAR autopilot</b>
+    that computes OBE attainment from your existing Excel marks, and placement training with proof —
+    at <b>1/10th the cost</b> of agency CRMs and consultants.</p>
+    <div class="row">
+      <a class="btn" href="/widget/1">🚀 Try the live AI counselor</a>
+      <a class="btn ghost" href="/dashboard">📊 Open the dashboard</a>
+    </div>
+    <div class="trust">
+      <span>✓ Approved-facts AI (never fake promises)</span>
+      <span>✓ DPDP consent firewall</span>
+      <span>✓ Telugu-first</span>
+      <span>✓ Dec 31 AQAR countdown</span>
+      <span>✓ Kill switch + audit log</span>
+    </div>
+  </header>
+
+  <section id="modules">
+    <div class="kicker">One OS · three revenue problems solved</div>
+    <h2>Your college's AI department</h2>
+    <div class="cards">
+      <div class="card">
+        <div class="tag">SEASON LICENSE</div>
+        <h3>SeatSetu Admissions</h3>
+        <div class="price">₹49,000 / season — pays back with 2 joined students</div>
+        <ul>
+          <li>AI counselor on your website &amp; WhatsApp — Telugu + English, 24×7</li>
+          <li>Meta/Google ads &amp; hoarding QR → captured lead in 60 seconds</li>
+          <li>Bilingual follow-up sequences (day-2, day-7, day-12) — automatic</li>
+          <li>Counselor to-do app, lead scoring, campus-visit tracking</li>
+          <li>Cost-per-joined-student attribution per source</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="tag">DEC 31 DEADLINE</div>
+        <h3>SeatSetu Accred</h3>
+        <div class="price">₹39,000 / year — replaces ₹1–10L consultants</div>
+        <ul>
+          <li>CO-PO attainment computed from your existing Excel marks</li>
+          <li>AQAR evidence vault across all 7 NAAC criteria + readiness %</li>
+          <li>DVV-consistency pre-checks &amp; gap analysis with action text</li>
+          <li>Bloom-mapped question papers in one click</li>
+          <li>AQAR/SSR section drafting your IQAC reviews, not writes</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="tag">PARENT TRUST</div>
+        <h3>SeatSetu Careers</h3>
+        <div class="price">₹39,000 / year — all students included</div>
+        <ul>
+          <li>Telugu-English AI mock interviews (HR + branch technical)</li>
+          <li>Per-question scoring with STAR improvement tips</li>
+          <li>Student readiness scores for the placement cell</li>
+          <li>One-click NAAC training-evidence export (Criterion 5.1.2)</li>
+          <li>Placement stats feed the admissions AI — trust compounds</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:22px;text-align:center">
+      <a class="btn amber" href="/dashboard">Get the Growth-OS bundle — ₹99,000 first year (list ₹1.5–2L)</a>
+    </div>
+  </section>
+
+  <section id="why">
+    <div class="kicker">Why colleges switch</div>
+    <h2>Built for tier-3 reality — not city budgets</h2>
+    <div class="why">
+      <div class="w"><b>60-second lead response</b><p>Every enquiry answered instantly, day or night. Calling a lead within minutes vs hours multiplies conversion ~10×.</p></div>
+      <div class="w"><b>Approved-facts only</b><p>The AI answers only from your approved fee/hostel/placement data — and legally refuses job-guarantee questions your telecallers improvise.</p></div>
+      <div class="w"><b>Excel in, report out</b><p>No new systems for staff. Marks Excel → attainment report. WhatsApp → evidence vault. Principals see a weekly brief.</p></div>
+      <div class="w"><b>Telugu-first, local team</b><p>Parents talk the way they talk. Onboarding happens at your campus in one afternoon — by people from your own district.</p></div>
+    </div>
+    <div class="stats" style="margin-top:26px">
+      <div class="stat"><b>~47%</b><div>AP private-college seats vacant — the problem we attack</div></div>
+      <div class="stat"><b>10×</b><div>faster first response than telecaller-only workflows</div></div>
+      <div class="stat"><b>1/10th</b><div>the cost of admissions CRMs (Meritto/ExtraaEdge class)</div></div>
+      <div class="stat"><b>Dec 31</b><div>AQAR readiness tracked to the day</div></div>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="kicker">Bring SeatSetu to your college</div>
+    <h2>Talk to the team — in Telugu, English or Hindi</h2>
+    <div class="cards">
+      <div class="card" style="text-align:center">
+        <h3>💬 WhatsApp</h3>
+        <div style="font-family:var(--font-display);font-size:20px;color:var(--ink);margin:8px 0">+91 75691 92211</div>
+        <a class="btn grn" style="background:linear-gradient(135deg,#16a34a,#15803d)" href="https://wa.me/917569192211" target="_blank" rel="noopener">Chat on WhatsApp</a>
+      </div>
+      <div class="card" style="text-align:center">
+        <h3>📞 Call us</h3>
+        <div style="font-family:var(--font-display);font-size:20px;color:var(--ink);margin:8px 0">+91 92471 05525</div>
+        <a class="btn" href="tel:+919247105525">Call now</a>
+      </div>
+      <div class="card" style="text-align:center">
+        <h3>🌐 Pooja Soft Solutions</h3>
+        <div class="muted" style="font-size:13px;margin:8px 0;line-height:1.6">Ongole, Andhra Pradesh, India<br>info@poojasoftsolutions.com</div>
+        <a class="btn ghost" href="https://poojasoftsolutions.com" target="_blank" rel="noopener">Visit website ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="band">
+      <h2>See your college in it: talk to the AI counselor right now — it answers your fees, hostel and placements.</h2>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <a class="btn" href="/widget/1">💬 Start chatting (free)</a>
+        <a class="btn amber" href="/dashboard">📊 Explore the full OS</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <img src="/static/logo.png" alt="SeatSetu">
+    <span>Every seat. Filled. · Admissions · Accred · Careers</span>
+    <span style="margin-left:auto">Powered by <a href="https://poojasoftsolutions.com" target="_blank" rel="noopener" style="color:var(--teal-deep);font-weight:600">Pooja Soft Solutions</a> · Ongole, AP · 📞 92471 05525 · 💬 75691 92211</span>
+  </footer>
+</div>
+</body>
+</html>

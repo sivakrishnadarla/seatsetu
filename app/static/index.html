@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/static/brand.css">
+<link rel="icon" type="image/png" href="/static/favicon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32.png">
+<link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+<meta name="theme-color" content="#0D9488">
+<title>SeatSetu — Every seat. Filled.</title>
+<style>
+  :root{--bg:#F7FAF9;--panel:#FFFFFF;--panel2:#F0F5F4;--line:#DCE9E6;--txt:#12332E;--mut:#5B7470;--acc:#0D9488;--acc2:#0F766E;--ok:#0F766E;--warn:#B45309;--bad:#B91C1C;--chip:#F0F5F4}
+  *{margin:0;padding:0;box-sizing:border-box;font-family:var(--font-body)}
+  body{background:var(--bg);color:var(--txt);display:flex;height:100vh;overflow:hidden}
+  aside{width:225px;background:var(--panel2);border-right:1px solid var(--line);padding:16px 12px;display:flex;flex-direction:column;flex-shrink:0}
+  .logo{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin-bottom:14px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px}
+  .logo b{font-size:15.5px;line-height:1.15}.logo span{font-size:11.5px;color:var(--mut);display:block}
+  nav button{display:block;width:100%;text-align:left;padding:8px 11px;border:0;background:transparent;color:var(--mut);border-radius:8px;cursor:pointer;font-size:13px;margin-bottom:2px}
+  nav button:hover{background:var(--chip);color:var(--txt)}
+  nav button.on{background:linear-gradient(90deg,#0D948826,#F59E0B1a);color:#0F766E;box-shadow:inset 3px 0 0 #0D9488}
+  .tenantbox{margin-top:auto;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:9px}
+  select{width:100%;background:var(--chip);color:var(--txt);border:1px solid var(--line);border-radius:6px;padding:6px;font-size:12px;margin-top:5px}
+  main{flex:1;overflow-y:auto;padding:22px 26px}
+  h1{font-size:20px;margin-bottom:3px}.sub{color:var(--mut);font-size:12.5px;margin-bottom:18px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:16px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+  .card h3{font-size:11.5px;color:var(--mut);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px}
+  .big{font-size:23px;font-weight:700;font-family:var(--font-display);color:var(--ink,#0B1F1C)}
+  section.view{display:none}section.view.on{display:block}
+  .row{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{background:linear-gradient(135deg,#0D9488,#0F766E);box-shadow:0 2px 8px #0d948833;border:0;color:#fff;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:12.5px;font-weight:600}
+  .btn:hover{opacity:.9}.btn.ghost{background:var(--chip);color:var(--txt);border:1px solid var(--line)}
+  .btn.red{background:linear-gradient(135deg,#B91C1C,#7F1D1D)}.btn.grn{background:linear-gradient(135deg,#0D9488,#134E4A)}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th{background:var(--chip);color:var(--mut);text-align:left;padding:8px 10px;font-size:11.5px;text-transform:uppercase;letter-spacing:1px}
+  td{padding:8px 10px;border-top:1px solid var(--line);vertical-align:top}
+  .tag{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11.5px;font-weight:600}
+  .tag.ok{background:#CCFBF1;color:#0F766E}.tag.warn{background:#FEF3C7;color:#B45309}.tag.bad{background:#FEE2E2;color:#B91C1C}.tag.info{background:#CCFBF1;color:#134E4A}
+  .funnel{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+  .frow{display:flex;align-items:center;gap:8px;font-size:12px}
+  .fbar{height:20px;background:linear-gradient(90deg,#0D9488,#2DD4BF);border-radius:5px;min-width:26px;display:flex;align-items:center;justify-content:flex-end;padding:0 6px;font-size:11px;color:#FFFFFF;font-weight:600}
+  .chat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px;cursor:pointer}
+  .msg{padding:8px 11px;border-radius:10px;font-size:12.5px;margin:5px 0;line-height:1.5;white-space:pre-wrap;max-width:88%}
+  .msg.parent{background:var(--chip);margin-left:auto}.msg.ai{background:#F0FBF8;border:1px solid #CCEEE6}
+  .cite{font-size:11.5px;color:var(--acc2);display:block;margin-top:4px}
+  textarea,input.f,select.f{width:100%;background:var(--chip);border:1px solid var(--line);border-radius:8px;color:var(--txt);padding:8px;font-size:12.5px;margin:4px 0}
+  textarea{min-height:70px;resize:vertical}
+  .muted{color:var(--mut);font-size:12px}
+  pre{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:10px;font-size:11.5px;overflow-x:auto;white-space:pre-wrap;font-family:ui-monospace,Consolas,monospace;color:#0F766E}
+  .toast{position:fixed;bottom:20px;right:20px;background:var(--panel);border:1px solid var(--acc);padding:11px 16px;border-radius:10px;font-size:12.5px;display:none;z-index:99;max-width:420px}
+  .spinner{display:inline-block;width:13px;height:13px;border:2px solid #fff5;border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .kd{display:flex;gap:6px}.kd input{flex:1}
+</style>
+</head>
+<body>
+<aside>
+  <div class="logo">
+    <svg width="30" height="30" viewBox="0 0 40 40"><rect x="2" y="2" width="36" height="36" rx="9" fill="#0d9488"/><path d="M20 8L33 15L20 22L7 15Z" fill="#fff"/><path d="M12 19v7c0 3 16 3 16 0v-7" stroke="#fff" stroke-width="2.6" fill="none"/></svg>
+    <div><img src="/static/logo.png" alt="SeatSetu" style="height:38px;border-radius:6px"><span style="margin-top:4px">Every seat. Filled.</span></div>
+  </div>
+  <nav id="nav">
+    <button data-v="overview" class="on">📊 Overview</button>
+    <button data-v="leads">👥 Leads</button>
+    <button data-v="chats">💬 Chats (AI)</button>
+    <button data-v="tasks">📞 Counselor To-Do</button>
+    <button data-v="followups">⏰ Follow-ups</button>
+    <button data-v="reports">📊 Reports</button>
+    <button data-v="ckp">📚 Knowledge Pack</button>
+    <button data-v="widget">🟢 Website Widget</button>
+    <button data-v="playbook">🧭 Operations Playbook</button>
+    <button data-v="accred">🎯 SeatSetu Accred</button>
+    <button data-v="careers">💼 SeatSetu Careers</button>
+    <button data-v="comply">🛡️ Compliance & Log</button>
+  </nav>
+  <div class="muted" style="margin:6px 0 2px;font-size:11.5px;color:var(--mut)">A product by <a href="https://poojasoftsolutions.com" target="_blank" rel="noopener" style="color:#0F766E;font-weight:600">Pooja Soft Solutions</a></div>
+  <div class="muted" style="font-size:11.5px;color:var(--mut)">📞 <a href="tel:+919247105525" style="color:var(--teal-deep)">92471 05525</a> · 💬 <a href="https://wa.me/917569192211" target="_blank" style="color:var(--teal-deep)">75691 92211</a></div><div class="tenantbox"><div class="muted">Active college</div><select id="collegeSel"></select></div>
+</aside>
+<main>
+  <section class="view on" id="v-overview">
+    <h1>Admissions Command Center <span style="font-size:12px;color:var(--acc2);font-weight:600">SeatSetu Admissions</span></h1><div class="sub">AI counselor · every lead · every rupee tracked → cost-per-joined-student</div>
+    <div class="grid" id="kpis"></div>
+    <div class="row">
+      <div class="card" style="flex:1;min-width:280px"><h3>Pipeline funnel</h3><div class="funnel" id="funnel"></div></div>
+      <div class="card" style="flex:1;min-width:280px"><h3>Source attribution (leads → visits → joined)</h3><table><tbody id="srcTbl"></tbody></table></div>
+      <div class="card" style="flex:1;min-width:240px"><h3>Branch interest</h3><div id="branchList" class="muted"></div></div>
+    </div>
+    <div class="card" style="margin-top:12px"><h3>Investor demo script (3 min)</h3><div class="muted">① Open the Website Widget tab → chat as a Telugu parent (ask "CSE fee enta? hostel unda?") → see instant grounded reply · ② Ask "100% placement guarantee unda?" → watch the honest refusal · ③ Meta lead webhook → lead + greeting in seconds (Leads tab) · ④ Run follow-ups → WhatsApp sequence fires · ⑤ Compliance tab → consent ledger + full audit log.</div></div>
+  </section>
+
+  <section class="view" id="v-leads">
+    <h1>Leads</h1><div class="sub">Scored · source-attributed · consent-gated. Advance stages as counselors act.</div>
+    <table><thead><tr><th>Name</th><th>Source</th><th>Stage</th><th>Score</th><th>Branch/Rank</th><th>Consent</th><th>Assigned</th><th>Next</th><th></th></tr></thead><tbody id="leadBody"></tbody></table>
+  </section>
+
+  <section class="view" id="v-chats">
+    <h1>AI Conversations</h1><div class="sub">Every AI answer with citations; trap questions flagged; handoffs visible.</div>
+    <div id="chatList"></div>
+  </section>
+
+  <section class="view" id="v-tasks">
+    <h1>Counselor To-Do</h1><div class="sub">Auto-created: call requests, trap follow-ups, complaints, visit preps.</div>
+    <table><thead><tr><th>Kind</th><th>Lead</th><th>Phone</th><th>Note</th><th>Assigned</th><th></th></tr></thead><tbody id="taskBody"></tbody></table>
+  </section>
+
+  <section class="view" id="v-followups">
+    <h1>Follow-up Engine</h1><div class="sub">Bilingual WhatsApp sequences: greeting (instant) → day-2 nudge → day-7 visit invite → day-12 reminder. Consent-gated.</div>
+    <button class="btn" onclick="runFollowups()">▶ Run scheduler now</button> <span id="fuOut" class="muted"></span>
+    <div style="height:12px"></div>
+    <table><thead><tr><th>Lead</th><th>Stage</th><th>Step</th><th>Next send</th><th>Due now</th></tr></thead><tbody id="fuBody"></tbody></table>
+  </section>
+
+  <section class="view" id="v-ckp">
+    <h1>College Knowledge Pack</h1><div class="sub">The AI answers ONLY from these approved facts (tables for exact numbers + prose for grounding). One guided session ≈ 45-90 min with the Principal.</div>
+    <div class="card" style="margin-bottom:12px"><h3>About & location</h3>
+      <textarea id="ckpAbout"></textarea><textarea id="ckpLocation" placeholder="Location note — highway, landmarks, distances"></textarea>
+      <h3 style="margin-top:8px">Admission process</h3><textarea id="ckpProcess"></textarea>
+      <button class="btn ghost" style="margin-top:8px" onclick="saveCkpProse()">💾 Save prose</button></div>
+    <div class="card"><h3>Courses & fees (exact table)</h3><div id="ckpCourses"></div>
+      <button class="btn grn" style="margin-top:10px" onclick="saveCkp()">💾 Save & re-index Knowledge Pack</button> <span id="ckpOut" class="muted"></span></div>
+  </section>
+
+  <section class="view" id="v-widget">
+    <h1>Website Widget</h1><div class="sub">Embed the AI counselor on the college website. WhatsApp uses the college's own number (Cloud API).</div>
+    <div class="row">
+      <div class="card" style="flex:1;min-width:300px"><h3>Embed code</h3>
+        <pre id="embedCode"></pre>
+        <button class="btn" onclick="copyEmbed()">📋 Copy</button> <a class="btn ghost" id="widgetLink" target="_blank">Open widget ↗</a></div>
+      <div class="card" style="flex:1;min-width:300px"><h3>Try it as a parent</h3><div class="muted" style="margin-bottom:8px">Suggested test messages: "CSE fee enta? hostel unda?" (Telugu) · "What are placements?" · "100% placement guarantee?" (trap) · "9876543210, Ravi, Proddatur" (lead capture)</div>
+        <a class="btn grn" id="widgetLink2" target="_blank">🚀 Open the live widget ↗</a></div>
+    </div>
+  </section>
+
+  <section class="view" id="v-accred">
+    <h1>SeatSetu Accred <span style="font-size:12px;color:var(--acc2)">NAAC · AQAR · OBE Autopilot</span></h1>
+    <div class="sub">Deterministic OBE math from your existing Excel marks · AQAR evidence vault (Dec 31 deadline) · Bloom-mapped question papers.</div>
+    <div class="grid" id="accredKpis"></div>
+    <div class="row">
+      <div class="card" style="flex:1.3;min-width:340px">
+        <h3>AQAR evidence checklist (7 criteria)</h3>
+        <table><tbody id="aqarBody"></tbody></table>
+        <div class="row" style="margin-top:10px">
+          <input class="f" id="evCrit" placeholder="Criterion e.g. 5.1.2" style="max-width:130px">
+          <input class="f" id="evTitle" placeholder="Evidence title" style="flex:1">
+          <button class="btn" onclick="addEvidence()">＋ Add</button>
+        </div>
+        <div id="evList" class="muted" style="max-height:130px;overflow-y:auto;margin-top:8px"></div>
+      </div>
+      <div class="card" style="flex:1;min-width:300px">
+        <h3>OBE attainment from Excel marks</h3>
+        <div class="muted" style="margin-bottom:8px">Sheet format: header with <b>Roll, Name, CO1, CO2…</b> columns (marks). Optional MAX row. <a id="sampleCsv" href="/static/sample_marks.csv" download style="color:var(--acc2)">Download sample CSV</a></div>
+        <select class="f" id="regSel"></select>
+        <input type="file" id="marksFile" class="f">
+        <button class="btn" onclick="uploadMarks()">📊 Upload & compute attainment</button>
+        <div id="attOut" style="margin-top:10px"></div>
+      </div>
+    </div>
+    <div class="row" style="margin-top:12px">
+      <div class="card" style="flex:1;min-width:300px">
+        <h3>Bloom-mapped question paper</h3>
+        <div class="muted" style="margin-bottom:6px">Auto-distributes COs & Bloom levels per section (College fills discipline content — saves the mapping/formatting grind).</div>
+        <button class="btn" onclick="genQPaper()">📝 Generate model paper (Section A: 10×2 L1-L2 · B: 5×5 L3 · C: 2×10 L4-L6)</button>
+        <div id="qpOut" style="margin-top:10px;max-height:300px;overflow-y:auto"></div>
+      </div>
+      <div class="card" style="flex:1;min-width:300px">
+        <h3>Attainment runs</h3>
+        <table><tbody id="runsBody"></tbody></table>
+      </div>
+    </div>
+  </section>
+
+  <section class="view" id="v-careers">
+    <h1>SeatSetu Careers <span style="font-size:12px;color:var(--acc2)">Placement Copilot</span></h1>
+    <div class="sub">Telugu-English AI mock interviews · readiness scores · NAAC training-evidence export (Criterion 5.1.2).</div>
+    <div class="row">
+      <div class="card" style="flex:1.2;min-width:340px">
+        <h3>Start a mock interview</h3>
+        <div class="row"><input class="f" id="miName" placeholder="Student name" style="flex:1"><input class="f" id="miRoll" placeholder="Roll no" style="flex:1"></div>
+        <div class="row"><select class="f" id="miBranch" style="flex:1"><option>CSE</option><option>CSE-AIML</option><option>ECE</option><option>MECH</option><option>CIVIL</option></select>
+        <select class="f" id="miRole" style="flex:1"><option>Software / IT</option><option>Core Engineering</option><option>Business / Support</option></select></div>
+        <button class="btn" onclick="startInterview()">🎤 Begin interview (5 questions)</button>
+        <div id="miFlow" style="margin-top:12px"></div>
+      </div>
+      <div class="card" style="flex:1;min-width:300px">
+        <h3>Training evidence (this season)</h3>
+        <div class="grid" id="careerKpis" style="grid-template-columns:1fr 1fr"></div>
+        <table><tbody id="miTable"></tbody></table>
+        <button class="btn grn" style="margin-top:10px" onclick="exportEvidence()">⬇ Export NAAC evidence CSV</button>
+        <div class="muted" style="margin-top:8px">Each interview = a dated pre-placement training record with per-question scores — drop it straight into the AQAR vault (5.1.2).</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="view" id="v-playbook">
+    <h1>Operations Playbook <span style="font-size:12px;color:var(--acc2)">the full working flow</span></h1>
+    <div class="sub">Run a college end-to-end with this sequence. Click any step to jump to the right tab. Blue = do once · Teal = every admission season · Amber = deadlines.</div>
+    <div id="pbList"></div>
+  </section>
+
+  <section class="view" id="v-reports">
+    <h1>Reports</h1><div class="sub">One-click management packs, registers and compliance summaries — print or save as PDF, ready for the principal's desk.</div>
+    <div class="row" style="margin-bottom:12px">
+      <div class="card" style="flex:1.4"><h3>Generate</h3>
+        <label class="muted">Period:</label>
+        <select id="repDays" style="padding:7px 10px;border:1px solid var(--line);border-radius:8px;margin:0 8px 10px 4px">
+          <option value="0">Full season</option><option value="1">Today</option>
+          <option value="7">Last 7 days</option><option value="30">Last 30 days</option>
+          <option value="90">Last 90 days</option></select>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn" onclick="mgmtPack()">🧾 Management One-Pager</button>
+          <button class="btn grn" onclick="window.open(`/api/colleges/${cid}/reports/leads.csv`,'_blank')">⬇ Leads CSV</button>
+          <button class="btn ghost" onclick="window.open(`/api/colleges/${cid}/reports/careers.csv`,'_blank')">⬇ Careers CSV</button>
+        </div>
+        <div class="muted" style="font-size:12px;margin-top:8px">The one-pager opens in a new tab — press its print button to save as PDF for the principal/director.</div>
+      </div>
+      <div class="card" style="flex:1"><h3>Staff & Access</h3>
+        <div id="staffList" class="muted" style="font-size:12.5px;margin-bottom:8px">—</div>
+        <details><summary class="muted" style="cursor:pointer;font-size:12.5px">➕ Add staff user (principal/admin)</summary>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
+            <input class="f" id="suUser" placeholder="username" style="width:110px">
+            <input class="f" id="suPass" placeholder="password (8+)" style="width:120px">
+            <select class="f" id="suRole" style="width:120px"><option value="counselor">counselor</option><option value="principal">principal</option><option value="placement">placement</option><option value="iqac">iqac</option><option value="director">director</option></select>
+            <input class="f" id="suName" placeholder="full name" style="width:130px">
+            <button class="btn grn" onclick="addStaff()">Create</button></div></details>
+        <details style="margin-top:6px"><summary class="muted" style="cursor:pointer;font-size:12.5px">🔑 Change my password</summary>
+          <div style="display:flex;gap:6px;margin-top:8px">
+            <input class="f" id="pwNew" type="password" placeholder="new password (8+)" style="flex:1">
+            <button class="btn" onclick="changeMyPw()">Update</button></div></details>
+      </div>
+    </div>
+    <div id="repOut" class="muted">Choose a period and generate the pack.</div>
+  </section>
+
+  <section class="view" id="v-comply">
+    <h1>Compliance & Audit</h1><div class="sub">DPDP consent ledger · kill switch · every AI answer and send logged immutably.</div>
+    <div class="row" style="margin-bottom:12px">
+      <div class="card"><h3>Kill switch</h3><div id="ksState" style="margin-bottom:8px"></div>
+        <button class="btn red" onclick="ks('on')">⏸ Pause AI</button> <button class="btn grn" onclick="ks('off')">▶ Resume</button></div>
+      <div class="card" style="flex:1;min-width:260px"><h3>Consent ledger (DPDP)</h3><div id="consentList" class="muted" style="max-height:150px;overflow-y:auto"></div></div>
+    </div>
+    <table><thead><tr><th>When</th><th>Actor</th><th>Action</th><th>Detail</th></tr></thead><tbody id="logBody"></tbody></table>
+  </section>
+</main>
+<div class="toast" id="toast"></div>
+<script>function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+let colleges=[], cid=null, ORIGIN=location.origin;
+const $=q=>document.querySelector(q);
+function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';setTimeout(()=>t.style.display='none',3600)}
+async function api(p,o){const r=await fetch(p,o);if(r.status===401){location.href='/login';throw new Error('login required')}if(!r.ok){let e=await r.json().catch(()=>({detail:r.statusText}));throw new Error(e.detail||e.reason||'Error')}return r.json()}
+async function loadColleges(){colleges=await api('/api/colleges');const s=$('#collegeSel');s.innerHTML=colleges.map(c=>`<option value="${c.id}">${esc(c.short||c.name)}</option>`).join('');cid=colleges[0]?.id||0;if(cid)refreshAll()}
+$('#collegeSel').onchange=e=>{cid=+e.target.value;refreshAll()};
+document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#nav button').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));$('#v-'+b.dataset.v).classList.add('on');route(b.dataset.v)});
+function route(v){if(v==='overview')loadOverview();if(v==='leads')loadLeads();if(v==='chats')loadChats();if(v==='tasks')loadTasks();if(v==='followups')loadFu();if(v==='ckp')loadCkp();if(v==='accred')loadAccred();if(v==='careers')loadCareers();if(v==='playbook')renderPlaybook();if(v==='widget')loadWidget();if(v==='comply')loadComply();if(v==='reports')loadReports()}
+function refreshAll(){loadOverview();loadLeads();loadWidget()}
+
+async function loadOverview(){if(!cid)return;const d=await api(`/api/colleges/${cid}`);
+  const j=d.funnel.joined||0;
+  $('#kpis').innerHTML=`<div class="card"><h3>Total leads</h3><div class="big">${d.total_leads}</div></div>
+  <div class="card"><h3>Joined 🎓</h3><div class="big" style="color:var(--ok)">${j}</div></div>
+  <div class="card"><h3>Visits</h3><div class="big">${(d.funnel.visit_booked||0)+(d.funnel.visited||0)}</div></div>
+  <div class="card"><h3>Due follow-ups</h3><div class="big" style="color:var(--warn)">${d.due_followups}</div></div>
+  <div class="card"><h3>Open tasks</h3><div class="big">${d.open_tasks}</div></div>`;
+  const stages=['new','ai_engaged','contacted','interested','visit_booked','visited','applied','seat_booked','joined','lost'];
+  const mx=Math.max(1,...stages.map(s=>d.funnel[s]||0));
+  $('#funnel').innerHTML=stages.map(s=>`<div class="frow"><span style="width:92px" class="muted">${s}</span><div class="fbar" style="width:${Math.max(3,(d.funnel[s]||0)/mx*100)}%">${d.funnel[s]||0}</div></div>`).join('');
+  $('#srcTbl').innerHTML=Object.entries(d.sources).map(([k,v])=>`<tr><td class="muted">${k}</td><td>${v.leads} leads</td><td>${v.visits} visits</td><td><b>${v.joined}</b> joined</td></tr>`).join('');
+  $('#branchList').innerHTML=Object.entries(d.branches).map(([k,v])=>`<div class="frow"><span style="width:80px">${k}</span><div class="fbar" style="width:${v*22}%">${v}</div></div>`).join('')||'—';}
+
+async function loadLeads(){if(!cid)return;const ls=await api(`/api/colleges/${cid}/leads`);
+  const stages=['new','ai_engaged','contacted','interested','visit_booked','visited','applied','seat_booked','joined','lost'];
+  $('#leadBody').innerHTML=ls.map(l=>`<tr><td>${esc(l.name)||'—'}<div class="muted">${esc(l.phone)} · ${esc(l.town||'')}</div></td><td class="muted">${esc(l.source)}${l.campaign?'<div>'+esc(l.campaign)+'</div>':''}</td>
+  <td><select class="f" onchange="setStage(${l.id},this.value)">${stages.map(s=>`<option ${s===l.stage?'selected':''}>${s}</option>`).join('')}</select></td>
+  <td><b>${l.score}</b></td><td>${l.branch_interest||'—'}<div class="muted">${l.rank_or_marks||''}</div></td>
+  <td>${l.consent?'<span class="tag ok">✓</span>':'<span class="tag bad">✗</span>'}</td><td class="muted">${l.assigned}</td><td class="muted">${l.next_followup||'—'}</td>
+  <td>${l.consent?`<button class="btn ghost" onclick="stopLead(${l.id})">STOP</button>`:''}</td></tr>`).join('')}
+async function setStage(id,stage){await api(`/api/leads/${id}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({stage})});toast('Stage → '+stage);loadLeads();loadOverview()}
+async function stopLead(id){await api(`/api/leads/${id}/stop`,{method:'POST'});toast('🛡️ Marketing stopped (DPDP withdrawal logged)');loadLeads()}
+
+async function loadChats(){if(!cid)return;const cs=await api(`/api/colleges/${cid}/conversations`);
+  $('#chatList').innerHTML=cs.map(c=>`<div class="chat"><b>${esc(c.lead)}</b> <span class="tag info">${c.channel}</span> ${c.status==='handed_off'?'<span class="tag bad">handed off</span>':''}
+  ${c.messages.map(m=>`<div class="msg ${m.role}">${m.text}${m.citations&&m.citations.length?'<span class="cite">📚 '+m.citations.map(x=>x.title+' ('+x.source+')').join(' · '):''}${m.flagged?'<span class="cite">⚠️ trap-question handled honestly</span>':''}</div>`).join('')}</div>`).join('')||'<div class="muted">No conversations yet — open the widget and chat.</div>'}
+
+async function loadTasks(){if(!cid)return;const ts=await api(`/api/colleges/${cid}/tasks`);
+  $('#taskBody').innerHTML=ts.map(t=>`<tr><td><span class="tag ${t.kind==='handoff'?'bad':'info'}">${t.kind}</span></td><td>${esc(t.lead)}</td><td class="muted">${esc(t.phone)}</td><td>${esc(t.note)}</td><td class="muted">${esc(t.assigned)}</td><td><button class="btn grn" onclick="taskDone(${t.id})">✓ Done</button></td></tr>`).join('')||'<tr><td colspan="6" class="muted">Inbox zero.</td></tr>'}
+async function taskDone(id){await api(`/api/tasks/${id}/done`,{method:'POST'});loadTasks()}
+
+async function loadFu(){if(!cid)return;const q=await api(`/api/colleges/${cid}/followups`);
+  $('#fuBody').innerHTML=q.map(f=>`<tr><td>${esc(f.name)}</td><td>${esc(f.stage)}</td><td>step ${f.seq_step}</td><td class="muted">${f.next||'—'}</td><td>${f.due_now?'<span class="tag warn">DUE</span>':'<span class="tag ok">scheduled</span>'}</td></tr>`).join('')}
+async function runFollowups(){if(!cid)return;$('#fuOut').innerHTML='<span class="spinner"></span> running…';
+  const r=await api(`/api/run/followups/${cid}`);$('#fuOut').textContent=`sent ${r.sent.length} · blocked ${r.blocked.length} (consent/kill-switch)`;toast('Follow-ups executed');loadFu()}
+
+async function loadCkp(){if(!cid)return;const k=await api(`/api/colleges/${cid}/ckp`);
+  $('#ckpAbout').value=k.about||'';$('#ckpLocation').value=k.location_note||'';$('#ckpProcess').value=k.admission_process||'';
+  const cols=[['name','Course'],['code','Code'],['intake','Intake'],['convener_fee','Convener ₹/yr'],['mgmt_fee','Mgmt ₹/yr'],['mgmt_note','Note'],['cutoff_note','Cutoff']];
+  window._ckpCourses=k.courses;
+  $('#ckpCourses').innerHTML=`<table><thead><tr>${cols.map(c=>`<th>${c[1]}</th>`).join('')}</tr></thead><tbody>${k.courses.map((c,i)=>`<tr>${cols.map(c=>`<td><input class="f" data-i="${i}" data-k="${c[0]}" value="${esc(k.courses[i][c[0]]??'')}" oninput="updCourse(${i},'${c[0]}',this.value)"></td>`).join('')}</tr>`).join('')}</tbody></table>`}
+function updCourse(i,k,v){window._ckpCourses[i][k]=isNaN(v)?v:+v||0}
+async function saveCkpProse(){await saveCkp(false)}
+async function saveCkp(reindex=true){if(!cid)return;$('#ckpOut').innerHTML='<span class="spinner"></span>';
+  const k=await api(`/api/colleges/${cid}/ckp`);
+  const r=await api(`/api/colleges/${cid}/ckp`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({about:$('#ckpAbout').value,location_note:$('#ckpLocation').value,admission_process:$('#ckpProcess').value,courses:window._ckpCourses||[],hostels:k.hostels,routes:k.routes,placements:k.placements,dates:k.dates})});
+  $('#ckpOut').textContent=`✅ saved · ${r.chunks_indexed} KB chunks indexed`;toast('Knowledge Pack updated — AI now answers from these facts')}
+
+async function loadWidget(){if(!cid)return;const code=`<!-- College Growth OS widget -->\n<iframe src="${ORIGIN}/widget/${cid}"\n  style="position:fixed;bottom:18px;right:18px;width:380px;height:600px;border:0;border-radius:16px;box-shadow:0 10px 40px #0007;z-index:9999"\n  title="Admissions chat"></iframe>`;
+  $('#embedCode').textContent=code;$('#widgetLink').href=`${ORIGIN}/widget/${cid}`;$('#widgetLink2').href=`${ORIGIN}/widget/${cid}`}
+function copyEmbed(){navigator.clipboard.writeText($('#embedCode').textContent);toast('Embed code copied')}
+
+async function loadReports(){if(!cid)return;
+ try{const d=await api(`/api/colleges/${cid}/reports/management`);
+  const a=d.admissions,c=d.careers,cp=d.compliance,ac=d.accred;
+  const conv=a.total_leads?Math.round(100*(a.funnel.joined||0)/a.total_leads):0;
+  const stages=Object.entries(a.funnel).map(([k,v])=>`<div class="frow"><span style="width:110px" class="muted">${k}</span><div class="fbar" style="width:${Math.max(3,v/Math.max(1,a.total_leads)*100)}%">${v}</div></div>`).join('');
+  const srcs=Object.entries(a.sources).sort((x,y)=>y[1].joined-x[1].joined).map(([k,v])=>`<tr><td>${esc(k)}</td><td>${v.leads}</td><td>${v.visits}</td><td><b>${v.joined}</b></td></tr>`).join('')||'<tr><td colspan=4 class=muted>No leads yet</td></tr>';
+  $('#repOut').innerHTML=`<div class="row">
+   <div class="card"><h3>Season at a glance</h3><div class="big">${a.total_leads}</div><span class="muted">leads · ${a.funnel.joined||0} joined (${conv}%) · ${a.followups_due} follow-ups due · ${a.tasks_open} open tasks</span></div>
+   <div class="card"><h3>Careers</h3><div class="big">${c.interviews}</div><span class="muted">interviews · avg ${c.avg}/5 · ${c.below_2_5.length} need coaching</span></div>
+   <div class="card"><h3>AQAR readiness</h3><div class="big">${ac.readiness_pct}%</div><span class="muted">${ac.evidence_collected}/${ac.evidence_total} evidence · ${ac.attainment_runs} runs · ${ac.question_papers} papers</span></div>
+   <div class="card"><h3>Compliance</h3><div class="big">${cp.consents_granted}/${cp.consents_total}</div><span class="muted">consents · ${cp.audit_events} audit events · AI ${cp.kill_switch?'PAUSED':'running'} · ${a.followups_sent} msgs sent (${a.followups_live} live)</span></div></div>
+   <div class="card" style="margin-top:10px"><h3>Stage funnel</h3>${stages}</div>
+   <div class="card" style="margin-top:10px"><h3>Source → joined</h3><table><tr><th>Source</th><th>Leads</th><th>Visit+</th><th>Joined</th></tr>${srcs}</table></div>`;
+  renderStaff();
+ }catch(e){$('#repOut').innerHTML=`<div class="card">${esc(e.message)}</div>`}}
+function mgmtPack(){if(cid)window.open(`/reports/${cid}?days=${$('#repDays').value||0}`,'_blank')}
+async function renderStaff(){try{const us=await api('/api/staff-users');
+  $('#staffList').innerHTML=us.map(u=>`<div>• <b>${esc(u.username)}</b> <span class="tag ${u.role==='principal'?'ok':'info'}">${esc(u.role)}</span> ${esc(u.name||'')} ${u.must_change?'<span class="tag warn">default pwd</span>':''}</div>`).join('')||'No staff users';
+}catch(e){$('#staffList').textContent='(visible to principal/admin)'}} 
+async function addStaff(){try{await api('/api/staff-users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:$('#suUser').value.trim(),password:$('#suPass').value,role:$('#suRole').value,name:$('#suName').value.trim()})});toast('Staff user created ✓');renderStaff()}catch(e){toast(esc(e.message))}}
+async function changeMyPw(){try{const us=await api('/api/staff-users');const me=us.find(u=>ME&&u.username===ME.username);
+ if(!me){toast('Use principal login to change passwords');return}
+ await api(`/api/staff-users/${me.id}/password`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:$('#pwNew').value})});toast('Password updated ✓');ME.must_change=false;loadReports()}catch(e){toast(esc(e.message))}}
+async function loadComply(){if(!cid)return;const c=await api(`/api/colleges/${cid}`);
+  $('#ksState').innerHTML=c.kill_switch?'<span class="tag bad">AI PAUSED</span>':'<span class="tag ok">AI running</span>';
+  const consents=await api(`/api/colleges/${cid}/consents`);
+  $('#consentList').innerHTML=consents.map(x=>`<div>${x.consent?'✅':'⛔'} ${esc(x.name)} (${esc(x.phone)}) ${x.at?'· '+x.at:''}</div>`).join('');
+  const logs=await api(`/api/colleges/${cid}/audit`);
+  $('#logBody').innerHTML=logs.map(l=>`<tr><td class="muted">${l.at}</td><td>${l.actor}</td><td><code>${l.action}</code></td><td class="muted" style="max-width:380px;word-break:break-all">${JSON.stringify(l.detail)}</td></tr>`).join('')}
+async function ks(s){await api(`/api/colleges/${cid}/killswitch/${s}`,{method:'POST'});toast(s==='on'?'⏸ AI paused for this college':'▶ AI resumed');loadComply()}
+
+async function loadAccred(){if(!cid)return;
+  const aq=await api(`/api/colleges/${cid}/accred/aqar`);
+  const days=Math.ceil((new Date('2026-12-31')-new Date())/864e5);
+  $('#accredKpis').innerHTML=`
+   <div class="card"><h3>AQAR deadline</h3><div class="big" style="color:var(--warn)">${days} days</div><div class="muted">to Dec 31, 2026</div></div>
+   <div class="card"><h3>AQAR readiness</h3><div class="big" style="color:${aq.readiness>66?'var(--ok)':aq.readiness>33?'var(--warn)':'var(--bad)'}">${aq.readiness}%</div><div class="muted">${aq.items.filter(i=>i.status==='collected').length}/${aq.total_items} items complete</div></div>
+   <div class="card"><h3>Attainment runs</h3><div class="big" id="runsCount">—</div><div class="muted">courses computed</div></div>`;
+  $('#aqarBody').innerHTML=aq.items.map(i=>`<tr><td><code>${i.criterion}</code></td><td style="max-width:240px">${esc(i.desc)}</td><td>${i.status==='collected'?'<span class="tag ok">done</span>':i.status==='partial'?'<span class="tag warn">partial</span>':'<span class="tag bad">pending</span>'}</td></tr>`).join('');
+  const ev=await api(`/api/colleges/${cid}/accred/evidence`);
+  $('#evList').innerHTML=ev.map(e=>`<div>• <code>${esc(e.criterion)}</code> ${esc(e.title)} ${e.status!=='pending'?'✅':''}</div>`).join('')||'<div>No evidence items yet.</div>';
+  const regs=await api(`/api/colleges/${cid}/accred/regs`);
+  $('#regSel').innerHTML=regs.map(r=>`<option value="${r.id}">${esc(r.course_name)} (${esc(r.code)})</option>`).join('')||'<option>No course registrations</option>';
+  const runs=await api(`/api/colleges/${cid}/accred/runs`);
+  $('#runsCount').textContent=runs.length;
+  $('#runsBody').innerHTML=runs.map(r=>`<tr><td>${esc(r.course)}</td><td class="muted">${esc(r.students)} students · ${esc(r.at)}</td><td><button class="btn ghost" onclick="viewRun(${r.id})">Report</button></td></tr>`).join('')||'<tr><td class="muted">No runs yet — upload a marks sheet.</td></tr>'}
+async function addEvidence(){const c=$('#evCrit').value.trim(),t=$('#evTitle').value.trim();if(!c||!t)return;
+  await api(`/api/colleges/${cid}/accred/evidence`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({criterion:c,title:t})});
+  toast('Evidence added — mark it collected when the file is in the vault');loadAccred()}
+async function uploadMarks(){const f=$('#marksFile').files[0];if(!f)return $('#attOut').textContent='Choose a file first';
+  const regId=$('#regSel').value;if(!regId)return $('#attOut').textContent='No course registration selected';
+  $('#attOut').innerHTML='<span class="spinner"></span> parsing & computing…';
+  const fd=new FormData();fd.append('file',f);
+  const r=await fetch(`/api/colleges/${cid}/accred/regs/${regId}/upload`,{method:'POST',body:fd});
+  if(!r.ok){const e=await r.json().catch(()=>({detail:'error'}));$('#attOut').textContent='⚠️ '+e.detail;return}
+  const d=await r.json();renderReport(d.report,d.notes);loadAccred()}
+async function viewRun(id){const d=await api(`/api/colleges/${cid}/accred/runs/${id}`);renderReport(d.report,null)}
+function renderReport(rep,notes){
+  let h=`<b>${rep.course}</b> · ${rep.students} students · target ${rep.target}<div class="muted" style="margin:4px 0">Direct CO attainment (0-3 scale):</div>`;
+  for(const[co,v]of Object.entries(rep.co_attain)){const col=v.level>=rep.target?'var(--ok)':v.level>=rep.target-0.5?'var(--warn)':'var(--bad)';
+    h+=`<div class="frow"><span style="width:46px">CO${co}</span><div class="fbar" style="width:${v.level/3*90}%;background:${col}">${v.level}</div><span class="muted">${v.avg_pct??'-'}% avg · ${v.students} std</span></div>`}
+  h+=`<div class="muted" style="margin:8px 0 4px">PO attainment (direct, CO-mapped):</div><table>`;
+  for(const[po,v]of Object.entries(rep.po_direct)){h+=`<tr><td>${po}</td><td style="color:${v>=rep.target?'var(--ok)':'var(--bad)'}"><b>${v}</b></td></tr>`}
+  h+='</table>';
+  if(rep.po_final)h+=`<div class="muted" style="margin-top:6px">Final (${rep.blend}): ${Object.entries(rep.po_final).map(([p,v])=>p+': '+v).join(' · ')}</div>`;
+  if(rep.gaps&&rep.gaps.length){h+=`<div class="muted" style="margin:8px 0 4px">Gap analysis & actions:</div>`;rep.gaps.forEach(g=>{h+=`<div class="tag warn" style="margin:2px">${g.po} short by ${g.gap}</div><div class="muted">${g.action}</div>`})}
+  if(notes)h+=`<div class="muted" style="margin-top:6px">${notes.join(' · ')}</div>`;
+  $('#attOut').innerHTML=h}
+async function genQPaper(){const regId=$('#regSel').value;if(!regId)return toast('No course selected');
+  $('#qpOut').innerHTML='<span class="spinner"></span> generating…';
+  const r=await api(`/api/colleges/${cid}/accred/qpaper`,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({reg_id:+regId,title:'Model Question Paper — '+new Date().toLocaleDateString(),
+      sections:[{name:'A',count:10,marks:2,blooms:[1,2]},{name:'B',count:5,marks:5,blooms:[3,4]},{name:'C',count:2,marks:10,blooms:[4,5,6]}]})});
+  let h=`<pre>${r.header}</pre>`;
+  r.sections.forEach(s=>{h+=`<div class="muted" style="margin-top:8px"><b>Section ${s.section}</b> — ${s.count}×${s.marks} marks (Bloom L${s.blooms.join(',L')})</div>`;
+    s.questions.forEach(q=>{h+=`<div style="font-size:12px;margin:3px 0">${q.no}. [CO${q.co} · L${q.bloom} · ${q.unit}] ${q.stem}</div>`})});
+  $('#qpOut').innerHTML=h;toast('Question paper generated & Bloom-audited')}
+
+let MI=null, MIQ=null;
+async function loadCareers(){if(!cid)return;const sm=await api(`/api/colleges/${cid}/careers/summary`);
+  $('#careerKpis').innerHTML=`<div class="card"><h3>Interviews</h3><div class="big">${sm.total}</div></div>
+  <div class="card"><h3>Avg readiness</h3><div class="big" style="color:var(--acc)">${sm.avg?sm.avg+' /5':'—'}</div></div>`;
+  $('#miTable').innerHTML=(sm.recent||[]).map(m=>`<tr><td>${esc(m.student)}<div class="muted">${esc(m.branch)} · ${esc(m.at)}</div></td><td style="color:${m.overall>=3.5?'var(--ok)':m.overall>=2.5?'var(--warn)':'var(--bad)'}"><b>${m.overall}</b>/5</td><td><button class="btn ghost" onclick="viewMI(${m.id})">Report</button></td></tr>`).join('')||'<tr><td class="muted">No interviews yet — start the first one.</td></tr>'}
+async function startInterview(){const name=$('#miName').value.trim();if(!name)return toast('Enter student name');
+  const r=await api(`/api/colleges/${cid}/careers/start`,{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({student_name:name,roll:$('#miRoll').value,branch:$('#miBranch').value,role:$('#miRole').value})});
+  MI=r.id;MIQ=r.questions;renderMI(name)}
+function renderMI(name){$('#miFlow').innerHTML=MIQ.map((q,i)=>`
+  <div style="border:1px solid var(--line);border-radius:10px;padding:10px;margin:8px 0" id="miq${i}">
+  <div style="font-size:12.5px"><b>Q${i+1} · ${q.type}</b> — ${q.q}</div>
+  <textarea class="f" id="mia${i}" placeholder="Student's answer (Telugu-English ok)…" style="min-height:56px"></textarea>
+  <button class="btn" onclick="answerMI(${i})">Score answer</button>
+  <div id="mir${i}" class="muted" style="margin-top:6px"></div></div>`).join('')+
+  `<button class="btn grn" onclick="finishMI()">✅ Finish & save report</button>`}
+async function answerMI(i){const text=$('#mia'+i).value.trim();if(!text)return;
+  const r=await api(`/api/careers/${MI}/answer`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({no:i+1,text})});
+  $('#mir'+i).innerHTML=`<span class="tag ${r.score>=3.5?'ok':r.score>=2.5?'warn':'bad'}">${r.score}/5</span> <span class="muted">${r.tips}</span>`}
+async function finishMI(){const r=await api(`/api/careers/${MI}/finish`,{method:'POST'});
+  toast('Report saved — overall '+r.overall+'/5');loadCareers();viewMI(MI)}
+async function viewMI(id){const d=await api(`/api/careers/${id}`);
+  let h=`<b>${d.student}</b> (${d.branch}) — overall <b style="color:var(--acc)">${d.overall}/5</b>`;
+  d.questions.forEach(q=>{h+=`<div style="margin:6px 0;font-size:12px"><b>Q${q.no} (${q.type})</b>: ${q.q}<div class="muted">Score ${q.score??'—'}/5 ${q.tips?'· '+q.tips:''}</div></div>`});
+  $('#miFlow').innerHTML=`<div class="card">${h}</div>`}
+async function exportEvidence(){location.href=`/api/colleges/${cid}/careers/export`}
+
+function pbStep(n,title,color,body,btn,tab){return `<div class="card" style="margin-bottom:10px;border-left:5px solid ${color}">
+  <div style="display:flex;align-items:center;gap:12px"><div style="min-width:34px;height:34px;border-radius:50%;background:${color};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-family:var(--font-display)">${n}</div>
+  <div style="flex:1"><b style="font-family:var(--font-display)">${title}</b><div class="muted" style="margin-top:3px">${body}</div></div>
+  ${btn?`<button class="btn" onclick="goTab('${tab}')">${btn} →</button>`:''}</div></div>`}
+function goTab(v){document.querySelector(`#nav button[data-v="${v}"]`).click()}
+function renderPlaybook(){
+  $('#pbList').innerHTML=
+  pbStep(1,'Create the college','var(--acc)','Overview → use Onboard (or API) → college record + staff are created. Fill name, city, EAPCET code, phone.','','overview')+
+  pbStep(2,'Build the College Knowledge Pack (45-90 min with Principal)','var(--acc)','Knowledge Pack tab → paste about/location/process, edit courses & fees table → Save & re-index. THE AI ONLY ANSWERS FROM THESE FACTS — exact numbers here = exact answers to parents.','','ckp')+
+  pbStep(3,'Test the counselor like a suspicious parent','var(--acc)','Website Widget tab → open the widget → ask fees in Telugu, ask the 100%-guarantee trap, share a phone number → check lead appears in Leads.','','widget')+
+  pbStep(4,'Embed on the college website','var(--acc)','Website Widget tab → copy the iframe snippet → college webmaster pastes before </body>. WhatsApp live: add WHATSAPP_TOKEN + PHONE_ID in env, point Meta webhook at /api/webhooks/meta-lead.','','widget')+
+  pbStep(5,'Connect lead sources (season start)','var(--acc)','Attach Meta lead-ads form (webhook), hoarding QR → wa.me link, missed-call number. Every source is auto-tagged for attribution.','','leads')+
+  pbStep(6,'Run the daily rhythm (5 min/day)','var(--teal)','Overview → check due follow-ups + open tasks → Follow-ups tab → Run scheduler (sends day-2/7/12 bilingual nudges; consent-gated) → Counselor To-Do → clear calls.','','followups')+
+  pbStep(7,'Work the funnel weekly','var(--teal)','Leads tab → advance stages (interested → visit_booked → joined), assign counselors. Overview shows cost-per-source → move ad budget to cheapest joins.','','leads')+
+  pbStep(8,'AQAR season (Sep-Dec) — the Dec 31 clock','var(--warn)','SeatSetu Accred → create course regs → upload each course marks Excel (sample CSV provided) → attainment reports → add exit survey → evidence vault: collect items, mark done → readiness % → Dec 31.','','accred')+
+  pbStep(9,'Placement season (Nov-Apr)','var(--warn)','SeatSetu Careers → run mock interviews per student (Telugu-English answers) → readiness scores → Export NAAC evidence CSV → drop into the AQAR vault (5.1.2).','','careers')+
+  pbStep(10,'Governance & safety (always on)','var(--ink, #0B1F1C)','Compliance tab → DPDP consent ledger, STOP button per lead, full audit log, kill switch. Every AI answer is cited and logged.','','comply')+
+  `<div class="card" style="margin-top:14px;background:linear-gradient(135deg,#0D9488,#0F766E);color:#fff;border:0">
+    <b style="font-family:var(--font-display)">Support — Pooja Soft Solutions</b>
+    <div style="margin-top:6px;font-size:13px">📞 92471 05525 · 💬 WhatsApp 75691 92211 · ✉️ info@poojasoftsolutions.com · <a href="https://poojasoftsolutions.com" target="_blank" style="color:#fff">poojasoftsolutions.com</a> · Ongole, Andhra Pradesh</div></div>`}
+
+let ME=null;
+async function boot(){try{ME=await api('/api/me');
+  const chip=document.createElement('span');chip.className='tag info';chip.style.marginLeft='8px';
+  chip.textContent=`👤 ${ME.name} · ${ME.role}${ME.must_change?' · ⚠️ change password':''}`;
+  document.querySelector('.logo').appendChild(chip);
+  document.querySelectorAll('#nav button').forEach(b=>{if(!ME.tabs.includes(b.dataset.v))b.style.display='none'});
+  if(ME.college_id){const sel=$('#collegeSel');sel.value=ME.college_id;sel.disabled=true;
+    if(cid!==ME.college_id){cid=ME.college_id;}}
+}catch(e){/* master admin: no restrictions */}
+await loadColleges();if(ME&&ME.college_id){cid=ME.college_id;refreshAll()}}
+(async function(){await boot()})();
+</script>
+</body>
+</html>

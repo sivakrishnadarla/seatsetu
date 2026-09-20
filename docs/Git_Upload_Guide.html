@@ -1,0 +1,125 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><title>SeatSetu — GitHub Upload & Vercel Deploy Guide</title>
+<style>
+:root{--teal:#0D9488;--deep:#0F766E;--ink:#0B1F1C;--ink2:#134E4A;--amber:#F59E0B;--amberD:#B45309;--bg:#F7FAF9;--line:#DCE9E6;--mut:#5B7470}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,'Segoe UI',sans-serif;color:#12332E;background:var(--bg);font-size:14.5px;line-height:1.6}
+.page{max-width:860px;margin:0 auto;padding:34px 26px}
+header{background:linear-gradient(135deg,#0D9488,#0F766E 60%,#134E4A);border-radius:16px;color:#fff;padding:28px 32px;margin-bottom:24px}
+header .kick{font-weight:700;letter-spacing:2px;font-size:11px;color:#FDE68A;text-transform:uppercase}
+header h1{font-size:26px;margin:10px 0 4px}header p{color:#ECFDF5;font-size:14px;margin:0}
+h2{font-size:19px;color:var(--ink);border-left:5px solid var(--amber);padding-left:12px;margin:30px 0 10px}
+.step{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:10px 0;display:flex;gap:14px}
+.step .n{flex:0 0 34px;height:34px;border-radius:50%;background:var(--teal);color:#fff;font-weight:700;
+display:flex;align-items:center;justify-content:center;font-size:16px}
+.step b{color:var(--ink2)}
+.step .btn-x{background:#F1F5F4;border:1px solid var(--line);border-radius:6px;padding:1px 8px;font-size:12.5px;font-weight:600;white-space:nowrap}
+.warn{background:#FEF3C7;border-left:5px solid var(--amber);border-radius:10px;padding:12px 16px;margin:12px 0}
+.ok{background:#CCFBF1;border-left:5px solid var(--teal);border-radius:10px;padding:12px 16px;margin:12px 0}
+code,pre{font-family:ui-monospace,'Cascadia Mono',Consolas,monospace}
+code{background:#134E4A12;color:var(--deep);padding:2px 7px;border-radius:6px;font-size:13px}
+pre{background:#0B1F1C;color:#A7F3D0;border-radius:12px;padding:16px 20px;font-size:13px;line-height:1.8;overflow-x:auto;margin:10px 0}
+pre b{color:#6EE7B7}
+table{width:100%;border-collapse:collapse;margin:10px 0;background:#fff;border-radius:10px;overflow:hidden}
+th{background:#134E4A;color:#fff;text-align:left;padding:9px 12px;font-size:12.5px}
+td{padding:9px 12px;border-top:1px solid var(--line);font-size:13.5px;vertical-align:top}
+.foot{margin-top:30px;border-top:3px solid var(--amber);padding-top:12px;text-align:center;color:var(--mut);font-size:12.5px}
+@media print{body{background:#fff}.page{padding:8mm 10mm;max-width:none}.step,.warn,.ok,table{page-break-inside:avoid}h2{page-break-after:avoid}}
+</style></head><body><div class="page">
+<header><div class="kick">Pooja Soft Solutions · Operations</div>
+<h1>GitHub Upload &amp; Vercel Deploy — SeatSetu v0.3.2</h1>
+<p>From zip file to live URL in ~10 minutes. Cost: ₹0. No coding needed (Way A).</p></header>
+
+<div class="ok"><b>Before you start:</b> you need <code>SeatSetu_v0.3.2.zip</code> (in your Downloads).
+Unzip it once — you'll get a folder named <code>SeatSetu</code>. That's the whole product.</div>
+
+<h2>Way A — Upload on the GitHub website (recommended, no installs)</h2>
+
+<div class="step"><div class="n">1</div><div><b>Create a free GitHub account.</b> Go to <code>github.com</code> → <span class="btn-x">Sign up</span> → verify email. Already have one? Just sign in.</div></div>
+
+<div class="step"><div class="n">2</div><div><b>Create the repository.</b> Click the <b>+</b> icon (top-right) → <span class="btn-x">New repository</span>.<br>
+Repository name: <code>seatsetu</code> · Visibility: select <b>Private</b> (it's your business product).<br>
+Do <b>NOT</b> tick "Add a README" / ".gitignore" / "license" — the files already include them.<br>
+Click <span class="btn-x">Create repository</span>.</div></div>
+
+<div class="step"><div class="n">3</div><div><b>Upload the files.</b> On the new empty repo page, click the link
+<span class="btn-x">uploading an existing file</span>. Open your unzipped <code>SeatSetu</code> folder,
+press <b>Ctrl+A</b> to select everything inside it, and drag it all into the GitHub drop box.</div></div>
+
+<div class="warn">⚠️ <b>Upload what's INSIDE the SeatSetu folder, not the folder itself.</b> After dragging, you should see
+~49 files listed — including <code>app</code>, <code>docs</code>, <code>api</code>, <code>requirements.txt</code>, <code>vercel.json</code>.
+If you only see one item named "SeatSetu", open it, select all inside, and drag again.</div>
+
+<div class="step"><div class="n">4</div><div><b>Commit.</b> Wait until all files are listed (dragging 49 files takes ~30s), then click
+<span class="btn-x">Commit changes</span>. Done — your code is on GitHub at <code>github.com/YOUR-NAME/seatsetu</code>. ✅</div></div>
+
+<h2>Way B — Git commands (professional way, optional)</h2>
+<p>Install Git once from <code>git-scm.com</code> (default options are fine). Do steps 1–2 above first (create the EMPTY repo on the website), then:</p>
+<pre><b># in the unzipped SeatSetu folder (open the folder, then Git Bash / Terminal):
+cd SeatSetu
+
+git init
+git add .
+git commit -m "SeatSetu v0.3.2"
+git branch -M main
+git remote add origin https://github.com/YOUR-NAME/seatsetu.git
+git push -u origin main</b>   <i># enter your GitHub username + a Personal Access Token as password</i></pre>
+<p style="color:var(--mut);font-size:13px">GitHub no longer accepts account passwords in the terminal — when asked for a password,
+use a <b>Personal Access Token</b>: GitHub → Settings → Developer settings → Personal access tokens → Generate (tick "repo").</p>
+
+<h2>Deploy live on Vercel (free) — this gives you the working URL</h2>
+
+<div class="step"><div class="n">5</div><div><b>Sign in to Vercel with GitHub.</b> Go to <code>vercel.com</code> →
+<span class="btn-x">Sign Up → Continue with GitHub</span> → authorize. Free "Hobby" plan is enough.</div></div>
+
+<div class="step"><div class="n">6</div><div><b>Import the repo.</b> Click <span class="btn-x">Add New… → Project</span> → find
+<code>seatsetu</code> in the list → <span class="btn-x">Import</span>. Leave Framework Preset / Build Command / Output Directory untouched.</div></div>
+
+<div class="step"><div class="n">7</div><div><b>Add environment variables</b> (same screen, open <b>Environment Variables</b> before deploying):</div></div>
+
+<table>
+<tr><th>Name</th><th>Value</th><th>Why</th></tr>
+<tr><td><code>ADMIN_PASSWORD</code></td><td>a strong password you choose</td><td>Your master dashboard login (default <code>seatsetu-admin</code> is dev-only)</td></tr>
+<tr><td><code>SECRET_KEY</code></td><td>any long random text (e.g. 32+ characters)</td><td>Signs staff login cookies — must be unique in production</td></tr>
+</table>
+
+<div class="warn">🟡 <b>Honest note about the database:</b> with no database URL, SeatSetu uses a temporary demo storage on Vercel that
+<b>resets on restarts</b> — perfect for demos. When you sign a REAL college, spend 3 minutes on a free permanent database:
+<code>neon.tech</code> → sign up → create project → copy the connection string → add env variable
+<code>DATABASE_URL</code> = <code>postgresql+psycopg://…(your string)…</code> in Vercel → redeploy. Now leads are stored forever.</div>
+
+<div class="step"><div class="n">8</div><div><b>Deploy.</b> Click <span class="btn-x">Deploy</span> → wait ~1 minute →
+you get a live URL like <code>seatsetu.vercel.app</code>. Test: open <code>/home</code> (landing), <code>/widget/1</code> (AI counselor),
+<code>/login</code> (dashboard with your ADMIN_PASSWORD). ✅</div></div>
+
+<h2>Way C — GitHub Desktop (the fix when folders are missing)</h2>
+<p>GitHub's website uploads <b>files only</b> — dragging drops every subfolder silently. GitHub Desktop (free app, <code>desktop.github.com</code>) uploads everything correctly:</p>
+<div class="step"><div class="n">1</div><div>Install GitHub Desktop → sign in with your GitHub account.</div></div>
+<div class="step"><div class="n">2</div><div><b>Delete the broken repo:</b> on github.com → your <code>seatsetu</code> repo → Settings → scroll to Danger Zone → <span class="btn-x">Delete this repository</span> (it only contains the broken upload).</div></div>
+<div class="step"><div class="n">3</div><div>GitHub Desktop → <b>File → Add local repository…</b> → choose your unzipped <code>SeatSetu</code> folder → it will say "not a repository" → click <span class="btn-x">create a repository here</span> → <span class="btn-x">Create Repository</span>.</div></div>
+<div class="step"><div class="n">4</div><div>Click <b>Publish repository</b> (top bar) → keep <b>Private</b> ticked → <span class="btn-x">Publish</span>. All 49+ files with every folder go up. ✅</div></div>
+<div class="step"><div class="n">5</div><div>Vercel notices the push automatically and redeploys in ~2 minutes. Open <code>seatsetu.vercel.app/home</code> — it should now work. If it still shows the old error: Vercel → Deployments → ⋯ → <span class="btn-x">Redeploy</span>.</div></div>
+
+<h2>After go-live — everyday updates</h2>
+<table>
+<tr><th>Task</th><th>How</th></tr>
+<tr><td>Change a file (e.g. fees text in seed, guide)</td><td>GitHub → open the file → ✏️ pencil icon → edit → Commit. Vercel auto-redeploys in ~1 min.</td></tr>
+<tr><td>Add new files</td><td>GitHub → <span class="btn-x">Add file → Upload files</span> → drag → Commit.</td></tr>
+<tr><td>New college onboarding</td><td>Log into YOUR dashboard → Knowledge Pack → New college → fill details (Onboarding_Kit checklist)</td></tr>
+<tr><td>Never upload</td><td><code>.env</code> (local keys file) — keep it only on your own computer</td></tr>
+</table>
+
+<h2>If something goes wrong</h2>
+<table>
+<tr><th>Symptom</th><th>Fix</th></tr>
+<tr><td>Vercel build fails</td><td>Check you uploaded the files INSIDE SeatSetu (vercel.json must be in the repo root of SeatSetu). Re-upload if missing.</td></tr>
+<tr><td>"Admin login required" but password correct</td><td>Re-check the env var name is exactly <code>ADMIN_PASSWORD</code>, then redeploy (Deployments → ⋯ → Redeploy).</td></tr>
+<tr><td>Widget shows but no data</td><td>The app self-seeds a demo college on first visit — refresh after 10 seconds.</td></tr>
+<tr><td>Vercel shows "A function needed by this page failed" / FUNCTION_INVOCATION_FAILED</td><td>Your upload is missing folders — GitHub's website <b>cannot upload folders</b>. Check the repo shows <code>app</code>, <code>docs</code>, <code>api</code> folder icons. Fix with GitHub Desktop (Way C below).</td></tr>
+<tr><td>Leads disappear after a few days (no DATABASE_URL)</td><td>That's the temp demo storage — add the free Neon Postgres (see note above).</td></tr>
+</table>
+
+<div class="foot"><b>SeatSetu — Every seat. Filled.</b><br>
+A product by <b>Pooja Soft Solutions</b> · Ongole, AP · poojasoftsolutions.com<br>
+📞 92471 05525 · 💬 WhatsApp 75691 92211</div>
+</div></body></html>
