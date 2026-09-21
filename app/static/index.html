@@ -12,7 +12,9 @@
   :root{--bg:#F7FAF9;--panel:#FFFFFF;--panel2:#F0F5F4;--line:#DCE9E6;--txt:#12332E;--mut:#5B7470;--acc:#0D9488;--acc2:#0F766E;--ok:#0F766E;--warn:#B45309;--bad:#B91C1C;--chip:#F0F5F4}
   *{margin:0;padding:0;box-sizing:border-box;font-family:var(--font-body)}
   body{background:var(--bg);color:var(--txt);display:flex;height:100vh;overflow:hidden}
-  aside{width:225px;background:var(--panel2);border-right:1px solid var(--line);padding:16px 12px;display:flex;flex-direction:column;flex-shrink:0}
+  aside{width:225px;background:var(--panel2);border-right:1px solid var(--line);padding:16px 12px 12px;display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:0;height:100vh;overflow:hidden}
+  #nav{flex:1 1 auto;min-height:0;overflow-y:auto;margin:0 -4px;padding:0 4px;scrollbar-width:thin;scrollbar-color:#0D948855 transparent}
+  #nav::-webkit-scrollbar{width:5px}#nav::-webkit-scrollbar-thumb{background:#0D948855;border-radius:99px}
   .logo{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin-bottom:14px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px}
   .logo b{font-size:15.5px;line-height:1.15}.logo span{font-size:11.5px;color:var(--mut);display:block}
   nav button{display:block;width:100%;text-align:left;padding:8px 11px;border:0;background:transparent;color:var(--mut);border-radius:8px;cursor:pointer;font-size:13px;margin-bottom:2px}
@@ -88,6 +90,18 @@
     <h1>Admissions Command Center <span style="font-size:12px;color:var(--acc2);font-weight:600">SeatSetu Admissions</span></h1><div class="sub">AI counselor · every lead · every rupee tracked → cost-per-joined-student</div>
     <div id="welcome" style="display:none;background:linear-gradient(135deg,#0D9488,#0F766E);color:#fff;border-radius:12px;padding:10px 14px;font-size:13.5px;margin-bottom:12px"></div>
     <div class="card" style="margin-bottom:12px;border-left:5px solid var(--amber)"><h3>🎯 What to do today</h3><div id="nba" class="muted">Computing…</div></div>
+    <div class="card" id="obCard" style="display:none;margin-bottom:12px;border-left:5px solid #0D9488"><h3>🏛 Onboard a new college (Owner)</h3>
+      <div class="muted" style="font-size:12px;margin-bottom:8px">Creates the college record + its starter staff directory. <b>No keys needed</b> — you are already signed in as Owner. Next: Knowledge tab → fill its courses/fees, then Staff tab → create its logins.</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <input class="f" id="obName" placeholder="College name *" style="flex:2;min-width:200px">
+        <input class="f" id="obShort" placeholder="Short name (menu)" style="flex:1;min-width:110px">
+        <input class="f" id="obCity" placeholder="City" style="flex:1;min-width:110px">
+        <input class="f" id="obDistrict" placeholder="District" style="flex:1;min-width:110px"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+        <input class="f" id="obCode" placeholder="EAPCET code" style="flex:1;min-width:120px">
+        <input class="f" id="obWebsite" placeholder="Website" style="flex:1;min-width:140px">
+        <input class="f" id="obPhone" placeholder="Office phone" style="flex:1;min-width:130px">
+        <button class="btn" onclick="onboardCollege()">🏛 Onboard college</button></div></div>
     <div class="grid" id="kpis"></div>
     <div class="row" id="anaRow" style="margin-top:12px"></div>
     <div class="row">
@@ -328,6 +342,15 @@ function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';se
 async function api(p,o){const r=await fetch(p,o);if(r.status===401){location.href='/login';throw new Error('login required')}if(!r.ok){let e=await r.json().catch(()=>({detail:r.statusText}));throw new Error(e.detail||e.reason||'Error')}return r.json()}
 async function loadColleges(){colleges=await api('/api/colleges');const s=$('#collegeSel');s.innerHTML=colleges.map(c=>`<option value="${c.id}">${esc(c.short||c.name)}</option>`).join('');cid=colleges[0]?.id||0;if(cid)refreshAll()}
 $('#collegeSel').onchange=e=>{cid=+e.target.value;refreshAll()};
+async function onboardCollege(){const v=id=>$('#'+id).value.trim();
+ const name=v('obName');if(!name)return toast('College name is required');
+ try{const d=await api('/api/colleges',{method:'POST',headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({name,short:v('obShort'),city:v('obCity'),district:v('obDistrict'),
+     eapcet_code:v('obCode'),website:v('obWebsite'),phone:v('obPhone')})});
+  toast('🏛 '+name+' onboarded — now fill its Knowledge Pack');
+  ['obName','obShort','obCity','obDistrict','obCode','obWebsite','obPhone'].forEach(i=>$('#'+i).value='');
+  await loadColleges();cid=d.college_id;$('#collegeSel').value=String(cid);refreshAll();
+ }catch(e){toast(esc(e.message))}}
 document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#nav button').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));$('#v-'+b.dataset.v).classList.add('on');route(b.dataset.v)});
 function route(v){if(v==='overview'){loadOverview();loadNBA();loadAnalytics()};if(v==='leads')loadLeads();if(v==='chats')loadChats();if(v==='tasks')loadTasks();if(v==='followups')loadFu();if(v==='ckp'){loadCkp();loadCompetitors()}if(v==='accred')loadAccred();if(v==='careers'){loadCareers();loadPasses()}if(v==='playbook')renderPlaybook();if(v==='widget')loadWidget();if(v==='comply')loadComply();if(v==='reports'){loadReports();loadCommissions()}if(v==='settings')loadSettings();if(v==='staff')loadStaff();if(v==='help')loadHelp()}
 function refreshAll(){loadBell();loadOverview();loadAnalytics();loadLeads();loadWidget()}
@@ -792,6 +815,7 @@ async function boot(){try{ME=await api('/api/me');
   chip.textContent=`👤 ${ME.name} · ${ME.role}${ME.must_change?' · ⚠️ change password':''}`;
   document.querySelector('.logo').appendChild(chip);
   document.querySelectorAll('#nav button').forEach(b=>{if(!ME.tabs.includes(b.dataset.v))b.style.display='none'});
+  if(ME.role==='admin'){const oc=document.getElementById('obCard');if(oc)oc.style.display='block'}
   if(ME.college_id){const sel=$('#collegeSel');sel.value=ME.college_id;sel.disabled=true;
     if(cid!==ME.college_id){cid=ME.college_id;}}
 }catch(e){/* master admin: no restrictions */}
