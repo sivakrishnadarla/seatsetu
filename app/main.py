@@ -1594,38 +1594,41 @@ def landing():
 
 @app.get("/guide")
 def guide():
-    return FileResponse(BASE_DIR / "docs" / "User_Guide.html", media_type="text/html")
+    return FileResponse(BASE_DIR / "docs" / "SeatSetu_User_Manual.pdf", media_type="application/pdf",
+                        headers={"Content-Disposition": "inline; filename=SeatSetu_User_Manual.pdf"})
 
 
 @app.get("/guide.pdf")
 def guide_pdf():
-    return FileResponse(BASE_DIR / "docs" / "SeatSetu_User_Guide.pdf",
+    return FileResponse(BASE_DIR / "docs" / "SeatSetu_User_Manual.pdf",
                         media_type="application/pdf",
-                        headers={"Content-Disposition": "inline; filename=SeatSetu_User_Guide.pdf"})
+                        headers={"Content-Disposition": "inline; filename=SeatSetu_User_Manual.pdf"})
 
 
 @app.get("/presentation")
 def presentation_partner():
-    return FileResponse(BASE_DIR / "docs" / "Presentation_Partner.html", media_type="text/html")
+    return FileResponse(BASE_DIR / "docs" / "SeatSetu_Sales_Deck.pdf", media_type="application/pdf",
+                        headers={"Content-Disposition": "inline; filename=SeatSetu_Sales_Deck.pdf"})
 
 
 @app.get("/presentation.pdf")
 def presentation_partner_pdf():
-    return FileResponse(BASE_DIR / "docs" / "SeatSetu_Partner_Deck.pdf",
+    return FileResponse(BASE_DIR / "docs" / "SeatSetu_Sales_Deck.pdf",
                         media_type="application/pdf",
-                        headers={"Content-Disposition": "inline; filename=SeatSetu_Partner_Deck.pdf"})
+                        headers={"Content-Disposition": "inline; filename=SeatSetu_Sales_Deck.pdf"})
 
 
 @app.get("/presentation-college")
 def presentation_college():
-    return FileResponse(BASE_DIR / "docs" / "Presentation_Colleges.html", media_type="text/html")
+    return FileResponse(BASE_DIR / "docs" / "SeatSetu_Sales_Deck.pdf", media_type="application/pdf",
+                        headers={"Content-Disposition": "inline; filename=SeatSetu_Sales_Deck.pdf"})
 
 
 @app.get("/presentation-college.pdf")
 def presentation_college_pdf():
-    return FileResponse(BASE_DIR / "docs" / "SeatSetu_College_Deck.pdf",
+    return FileResponse(BASE_DIR / "docs" / "SeatSetu_Sales_Deck.pdf",
                         media_type="application/pdf",
-                        headers={"Content-Disposition": "inline; filename=SeatSetu_College_Deck.pdf"})
+                        headers={"Content-Disposition": "inline; filename=SeatSetu_Sales_Deck.pdf"})
 
 
 @app.get("/favicon.ico")

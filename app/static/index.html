@@ -56,9 +56,12 @@
 <body>
 <div id="bell" title="What to do now — red = urgent" onclick="document.querySelector('#nav button[data-v=overview]').click()" style="position:fixed;top:14px;right:18px;cursor:pointer;font-size:21px;z-index:60">🔔<b id="bellBadge" style="position:absolute;top:-7px;right:-11px;background:#DC2626;color:#fff;border-radius:10px;font-size:10.5px;padding:1px 5px;display:none;font-family:var(--font-body,Inter)"></b></div>
 <aside>
-  <div class="logo">
-    <svg width="30" height="30" viewBox="0 0 40 40"><rect x="2" y="2" width="36" height="36" rx="9" fill="#0d9488"/><path d="M20 8L33 15L20 22L7 15Z" fill="#fff"/><path d="M12 19v7c0 3 16 3 16 0v-7" stroke="#fff" stroke-width="2.6" fill="none"/></svg>
-    <div><img src="/static/logo.png" alt="SeatSetu" style="height:38px;border-radius:6px"><span style="margin-top:4px">Every seat. Filled.</span></div>
+  <div class="logo" style="flex-direction:column;align-items:flex-start;gap:9px">
+    <svg width="38" height="38" viewBox="0 0 40 40"><rect x="2" y="2" width="36" height="36" rx="10" fill="#0d9488"/><path d="M20 8L33 15L20 22L7 15Z" fill="#fff"/><path d="M12 19v7c0 3 16 3 16 0v-7" stroke="#fff" stroke-width="2.6" fill="none"/></svg>
+    <div style="display:flex;flex-direction:column;gap:3px">
+      <span style="font-family:Poppins,var(--font-body,Inter);font-weight:800;font-size:21px;line-height:1;color:#0F766E;letter-spacing:-.3px;white-space:nowrap">Seat<span style="color:#0D9488;font:inherit;letter-spacing:inherit;display:inline;margin:0">Setu</span></span>
+      <span style="font-size:9px;font-weight:700;letter-spacing:2.4px;color:#B45309;text-transform:uppercase">Every seat. Filled.</span>
+    </div>
   </div>
   <nav id="nav">
     <button data-v="overview" class="on" title="Today's numbers, ROI and what to do now">📊 Overview</button>
