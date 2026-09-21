@@ -56,6 +56,7 @@ class College(Base):
     location_note = Column(Text, default="")          # address + landmarks + distances
     admission_process = Column(Text, default="")      # steps + documents + token/booking rules
     brand_color = Column(String(20), default="#0d9488")
+    ad_spend = Column(JSON, default=dict)   # {source: rupees spent this season}
     kill_switch = Column(Boolean, default=False)
     created_at = Column(DateTime, default=utcnow)
     courses = relationship("Course", back_populates="college")
@@ -146,6 +147,10 @@ class Lead(Base):
     consent = Column(Boolean, default=False)          # DPDP: required before any outbound
     consent_at = Column(DateTime, nullable=True)
     assigned_to = Column(Integer, ForeignKey("staff.id"), nullable=True)
+    ref_username = Column(String(60), default="")     # staff who brought this reference (commission basis)
+    commission_amt = Column(Integer, default=0)       # ₹ agreed per joined admission
+    commission_paid = Column(Boolean, default=False)  # settled flag
+    commission_paid_at = Column(DateTime, nullable=True)
     seq_step = Column(Integer, default=0)             # follow-up sequence position
     next_followup_at = Column(DateTime, nullable=True)
     last_inbound_at = Column(DateTime, nullable=True)
@@ -289,6 +294,18 @@ class MockInterview(Base):
     questions = Column(JSON)          # [{no,type,q,answer,score,tips,keywords}]
     overall = Column(Float, default=0)
     status = Column(String(12), default="open")   # open | done
+    self_practice = Column(Integer, default=0)    # 1 = student self-practice via Practice Pass
+    pass_id = Column(Integer, nullable=True)      # owning PracticePass
+    created_at = Column(DateTime, default=utcnow)
+
+
+class Feedback(Base):
+    """Parent's 👍/👎 on AI answers — the AI-quality metric colleges can show NAAC."""
+    __tablename__ = "feedback"
+    id = Column(Integer, primary_key=True)
+    college_id = Column(Integer, ForeignKey("colleges.id"), index=True)
+    conversation_id = Column(Integer, ForeignKey("conversations.id"), nullable=True)
+    helpful = Column(Boolean, default=True)
     created_at = Column(DateTime, default=utcnow)
 
 
@@ -298,10 +315,46 @@ class StaffUser(Base):
     college_id = Column(Integer, ForeignKey("colleges.id"), index=True, nullable=True)
     username = Column(String(60), unique=True, index=True)
     pw_hash = Column(String(200))
-    role = Column(String(20), default="counselor")  # principal|director|counselor|placement|iqac|admin
+    role = Column(String(20), default="counselor")  # admin|principal|director|manager|office|counselor|placement|iqac
     name = Column(String(120), default="")
+    phone = Column(String(20), default="")          # for WhatsApp welcome / recovery
+    tabs_json = Column(Text, nullable=True)         # Owner's per-person allocation (null = role preset)
+    last_login = Column(DateTime, nullable=True)    # last successful login
     must_change = Column(Boolean, default=True)
     active = Column(Boolean, default=True)
+    created_at = Column(DateTime, default=utcnow)
+
+
+class PracticePass(Base):
+    """Office-issued practice code: student self-practices voice mocks on any phone.
+    No dashboard access — only their own attempts."""
+    __tablename__ = "practice_passes"
+    id = Column(Integer, primary_key=True)
+    college_id = Column(Integer, ForeignKey("colleges.id"), index=True)
+    student_name = Column(String(120))
+    roll = Column(String(40), default="")
+    branch = Column(String(40), default="CSE")
+    code = Column(String(20), unique=True, index=True)
+    active = Column(Boolean, default=True)
+    last_used = Column(DateTime, nullable=True)
+    created_at = Column(DateTime, default=utcnow)
+
+
+class Competitor(Base):
+    """Owner-curated comparison pack: nearby colleges with PUBLIC data only.
+    The AI compares using exactly these numbers + source note — never invented."""
+    __tablename__ = "competitors"
+    id = Column(Integer, primary_key=True)
+    college_id = Column(Integer, ForeignKey("colleges.id"), index=True)
+    name = Column(String(140))
+    town = Column(String(80), default="")
+    distance_km = Column(String(20), default="")
+    annual_fee = Column(String(30), default="")
+    placements_pct = Column(String(20), default="")
+    closing_rank_note = Column(String(120), default="")
+    their_strength = Column(String(200), default="")
+    our_edge = Column(String(200), default="")
+    source_note = Column(String(200), default="AICTE approvals / public disclosures")
     created_at = Column(DateTime, default=utcnow)
 
 
@@ -329,6 +382,31 @@ def ensure_ready():
     if not _ready:
         from .seed import seed_if_empty
         seed_if_empty()
+        try:  # lightweight migrations for DBs created before v0.5
+            from sqlalchemy import text as _tx
+            with engine.begin() as c:
+                c.execute(_tx("ALTER TABLE colleges ADD COLUMN ad_spend JSON"))
+        except Exception:
+            pass
+        try:  # v0.6 staff columns
+            from sqlalchemy import text as _tx
+            with engine.begin() as c:
+                c.execute(_tx("ALTER TABLE staff_users ADD COLUMN phone VARCHAR(20) DEFAULT ''"))
+                c.execute(_tx("ALTER TABLE staff_users ADD COLUMN tabs_json TEXT"))
+                c.execute(_tx("ALTER TABLE staff_users ADD COLUMN last_login DATETIME"))
+        except Exception:
+            pass
+        try:  # v0.7.2 self-practice columns
+            from sqlalchemy import text as _tx
+            with engine.begin() as c:
+                c.execute(_tx("ALTER TABLE mock_interviews ADD COLUMN self_practice INTEGER DEFAULT 0"))
+                c.execute(_tx("ALTER TABLE leads ADD COLUMN ref_username VARCHAR(60) DEFAULT ''"))
+                c.execute(_tx("ALTER TABLE leads ADD COLUMN commission_amt INTEGER DEFAULT 0"))
+                c.execute(_tx("ALTER TABLE leads ADD COLUMN commission_paid INTEGER DEFAULT 0"))
+                c.execute(_tx("ALTER TABLE leads ADD COLUMN commission_paid_at DATETIME"))
+                c.execute(_tx("ALTER TABLE mock_interviews ADD COLUMN pass_id INTEGER"))
+        except Exception:
+            pass
         try:  # hot-path indexes (idempotent, helps existing DBs too)
             from sqlalchemy import text as _tx
             with engine.begin() as c:

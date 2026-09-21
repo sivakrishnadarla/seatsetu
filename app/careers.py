@@ -92,6 +92,33 @@ SCENARIO = dict(type="Scenario", q="Your teammate is not completing their part b
                 tip="Communicate first, offer help, redistribute, escalate only if needed — show maturity.")
 
 
+PROBES = [  # adaptive follow-ups — the panel pushes like a real interview
+    "That's a short answer — walk me through it step by step.",
+    "Give me one SPECIFIC example from your project or lab work.",
+    "What was the result? Numbers or outcome, please.",
+    "Okay. Now explain it like I'm a non-technical HR person.",
+    "What would you do differently if you did it again?",
+    "You'll face this in the job — how did you learn it: class, online, or practice?",
+]
+
+
+def make_probe(no: int, ans: str, score: float, item: dict) -> dict:
+    """Pick a probing follow-up based on WHY the answer was weak."""
+    a = (ans or "").strip().lower()
+    if len(a) < 60:
+        pq = PROBES[0]
+    elif not any(w in a for w in STAR_WORDS):
+        pq = PROBES[1]
+    elif score >= 2.0:
+        pq = PROBES[2]
+    else:
+        pq = PROBES[4]
+    return dict(type="Probe", q=pq, keywords=item.get("keywords", [])[:4],
+                tip="Probes are normal — the panel tests depth, not memory. Use STAR.",
+                no=f"{no}b", answer="", score=None, tips=None,
+                strict=item.get("strict", False))
+
+
 def build_interview(branch: str, role: str) -> list[dict]:
     branch = (branch or "CSE").upper()
     bank = TECH.get(branch, TECH["CSE"])

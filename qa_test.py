@@ -135,6 +135,43 @@ st, d = req("POST", f"/api/chat/{CID}", {"text":"flurple zorp qwerty","channel":
 check("Counselor", "Ungrounded → honest escape + task", d["escalated"])
 st, d = req("POST", f"/api/chat/1", {"text": "my EAPCET rank is 45000 - can I get CSE seat?"}); check("Counselor", "Rank advisor (approved closing ranks)", st==200 and ("58,000" in d.get("reply","")) and "✅" in d.get("reply",""), d.get("reply","")[:60])
 
+# ── v0.4: actions & intelligence ──
+st, d = req("POST", "/api/widget/1/book_visit", {"name":"QA Visitor","phone":"9600000001",
+            "date": __import__("datetime").date.today().isoformat(), "branch":"CSE","consent":True})
+check("Actions", "Widget: book campus visit", st==200 and d.get("ok"), str(d)[:70])
+st, d = req("POST", "/api/widget/1/book_visit", {"name":"QA Bad","phone":"123","date":"2026-01-01"})
+check("Actions", "Visit: invalid phone rejected", st==200 and not d.get("ok"), str(d)[:50])
+st, d = req("POST", "/api/widget/1/brochure_lead", {"name":"QA Brochure Parent","phone":"9600000002"})
+check("Actions", "Widget: brochure gate captures lead", st==200 and d.get("ok") and d.get("url"), str(d)[:70])
+st, pdf = req("GET", "/brochure/1.pdf", raw=True)
+check("Actions", "AI brochure PDF generated", st==200 and pdf[:4]==b"%PDF" and len(pdf)>3000, f"{len(pdf)//1024}KB")
+st, d = req("GET", "/api/colleges/1/next-actions")
+check("Actions", "Next-best-actions panel", st==200 and isinstance(d,list) and len(d)>=1, str(st))
+st, d = req("POST", "/api/colleges/1/coach", {"text":"fee enta saar","stage":"interested"})
+check("Actions", "Reply Coach suggestion", st==200 and d.get("suggestion"), str(d)[:60])
+
+# ── v0.5 premium ──
+st, leads = req("GET", "/api/colleges/1/leads")
+LID = leads[0]["id"] if isinstance(leads, list) and leads else 1
+st, d = req("GET", f"/api/leads/{LID}/timeline")
+check("Premium", "Lead 360 timeline", st==200 and "lead" in d and "timeline" in d, str(st))
+st, d = req("POST", f"/api/leads/{LID}/assign", {"username":"counselor"})
+check("Premium", "Assign lead to counselor", st==200 and d.get("ok"), str(d)[:50])
+st, d = req("POST", "/api/widget/1/feedback", {"helpful": True})
+check("Premium", "Parent 👍 feedback captured", st==200 and d.get("ok"), str(st))
+st, d = req("GET", "/api/colleges/1/analytics")
+check("Premium", "ROI analytics (CPL/CPJ/trend)", st==200 and "trend" in d and "conversion_pct" in d, str(st))
+st, d = req("GET", "/api/colleges/1/digest")
+check("Premium", "Monday digest (headline lines)", st==200 and isinstance(d.get("headline"), list) and len(d["headline"])>=4, str(st))
+st, d = req("PUT", "/api/colleges/1/settings", {"ad_spend": {"meta_ad": 12000, "hoarding": 4000}})
+check("Premium", "Save ad spend (principal)", st==200 and d.get("ok"), str(st))
+st, d = req("GET", "/api/colleges/1/analytics")
+check("Premium", "Cost-per-joined computed", st==200 and d.get("cpj") and d["spend"]==16000, str(d)[:60])
+st, bz = req("GET", "/api/colleges/1/backup.zip", raw=True)
+check("Premium", "Data backup ZIP", st==200 and bz[:2]==b"PK" and len(bz)>2000, f"{len(bz)//1024}KB")
+st, d = req("GET", "/api/colleges/1/settings", headers=h)
+check("Premium", "Counselor blocked from settings", st==403, str(st))
+
 # ── 4. Lead capture ──
 st, d = req("POST", f"/api/chat/{CID}", {"text":"Hi I am Ravi from Nandyal, number 9876543210","channel":"web","consent_given":True})
 check("Leads", "Chat lead captured", d["lead_captured"])
@@ -239,6 +276,192 @@ check("RAG", "KB search", st==200 and len(d)>0)
 
 # ── report ──
 mods = []
+
+# ── v0.6 staff & roles ──
+import time as _t
+
+def staff_login(u, p):
+    body = urllib.parse.urlencode({"username": u, "password": p}).encode()
+    r = urllib.request.Request(B+"/login", data=body, method="POST",
+        headers={"Content-Type": "application/x-www-form-urlencoded"})
+    op = urllib.request.build_opener(_NoRedirect)
+    try:
+        resp = op.open(r, timeout=30)
+    except urllib.error.HTTPError as e:
+        resp = e
+    sc = resp.headers.get("Set-Cookie", "")
+    tok = sc.split("ss_user=")[1].split(";")[0] if "ss_user=" in sc else None
+    return getattr(resp, "status", getattr(resp, "code", 0)), tok
+
+def hdr(tok):
+    return {"Content-Type": "application/json", "Cookie": "ss_user=" + tok}
+
+uname = "qaoff" + str(int(_t.time()))[-6:]
+st, d = req("POST", "/api/staff-users", {"username": uname, "password": "office-2026",
+           "role": "office", "name": "QA Office", "phone": "9999911111",
+           "tabs": ["leads", "tasks", "help"]})
+check("Staff", "Owner creates login + custom tabs", st == 200 and d.get("ok"), str(d)[:60])
+st, d = req("POST", "/api/staff-users", {"username": uname, "password": "office-2026"})
+check("Staff", "Duplicate username rejected", st == 422, str(st))
+st, d = req("GET", "/api/staff-users")
+uid = next((u["id"] for u in d if u["username"] == uname), 0)
+check("Staff", "Console lists person (phone visible)", uid > 0 and any(
+    u["username"] == uname and u["phone"] == "9999911111" for u in d), str(uid))
+ls, tok = staff_login(uname, "office-2026")
+check("Staff", "New person can login", ls in (303, 200) and tok, str(ls))
+st, d = req("GET", "/api/me", headers=hdr(tok))
+check("Staff", "Custom allocation honored (leads/tasks/help)",
+      st == 200 and sorted(d.get("tabs", [])) == ["help", "leads", "tasks"], str(d.get("tabs")))
+check("Staff", "Office user blocked from Settings",
+      req("GET", "/api/colleges/1/settings", headers=hdr(tok))[0] == 403, "")
+check("Staff", "Office user can't touch staff accounts",
+      req("PUT", f"/api/staff-users/{uid}", {"active": True}, headers=hdr(tok))[0] == 403, "")
+st, d = req("PUT", f"/api/staff-users/{uid}", {"active": False})
+check("Staff", "Owner deactivates -> login dies",
+      st == 200 and staff_login(uname, "office-2026")[0] == 401, str(st))
+req("PUT", f"/api/staff-users/{uid}", {"active": True})
+st, d = req("POST", f"/api/staff-users/{uid}/password", {"password": "newsecret99"})
+check("Staff", "Owner resets password -> new works",
+      st == 200 and staff_login(uname, "newsecret99")[0] == 303, str(st))
+st, d = req("GET", "/api/staff-users")
+u2 = next((u for u in d if u["username"] == uname), {})
+check("Staff", "Last-login tracked", bool(u2.get("last_login")), str(u2.get("last_login")))
+ls, dtok = staff_login("director", "director123")
+check("Staff", "Director opens Settings (ROI view)",
+      ls == 303 and req("GET", "/api/colleges/1/settings", headers=hdr(dtok))[0] == 200, str(ls))
+check("Staff", "Director can't create staff (owner-only)",
+      req("POST", "/api/staff-users", {"username": "xq1", "password": "12345678"},
+          headers=hdr(dtok))[0] == 403, "")
+
+
+# ── v0.7: comparison pack + probe interviews + /sell ──
+st, d = req("POST", "/api/colleges/1/competitors", {"name": "Sri Vision Institute of Technology",
+           "town": "Kadapa", "distance_km": "14 km", "annual_fee": "78000", "placements_pct": "58%",
+           "closing_rank_note": "CSE closes ~70k", "their_strength": "New campus buildings",
+           "our_edge": "2x placement record + senior faculty", "source_note": "AICTE approvals 2025-26"})
+check("Growth", "Comparison Pack: add competitor (owner)", st == 200 and d.get("ok"), str(st))
+st, d = req("POST", "/api/chat/1", {"text": "RIT vs Sri Vision Institute of Technology — which is better for CSE?", "channel": "web"})
+rep = d.get("reply", "") if isinstance(d, dict) else ""
+check("Growth", "Chat compares with public numbers + visit pivot",
+      st == 200 and "Sri Vision" in rep and "campus visit" in rep, rep[:70])
+st, d = req("POST", "/api/chat/1", {"text": "which is the best college nearby?", "channel": "web"})
+rep = d.get("reply", "") if isinstance(d, dict) else ""
+check("Growth", "Unlisted college -> honest refusal", st == 200 and "will not guess" in rep, rep[:60])
+st, d = req("GET", "/api/colleges/1/competitors")
+check("Growth", "Comparison Pack list", st == 200 and len(d) >= 1, str(st))
+st, m = req("POST", "/api/colleges/1/careers/start",
+            {"student_name": "QA Pro", "branch": "CSE", "role": "Software / IT", "strict": True})
+check("Growth", "Strict-panel interview starts", st == 200 and len(m.get("questions", [])) >= 5, str(st))
+MID = m.get("id", 0)
+st, d = req("POST", f"/api/careers/{MID}/answer", {"no": 1, "text": "ok"})
+fu = d.get("followup") or {}
+check("Growth", "Weak answer -> adaptive probe follow-up",
+      st == 200 and str(fu.get("no")) == "1b", str(d)[:80])
+st, d = req("POST", f"/api/careers/{MID}/answer", {"no": "1b",
+           "text": "In my second-year project I built a library app with Flask and SQLite; I led a 3-member team and we delivered before the deadline with 96% accuracy."})
+check("Growth", "Probe answer scored (no second probe)",
+      st == 200 and d.get("score") is not None and not d.get("followup"), str(d)[:60])
+st, bz = req("GET", "/sell", raw=True)
+check("Growth", "/sell sales page live (public)", st == 200 and b"Every seat" in bz, str(st))
+
+
+# ── v0.7.2: student practice pass ──
+st, d = req("POST", "/api/colleges/1/practice-passes", {"student_name": "QA Student", "roll": "22CSE999", "branch": "CSE"})
+check("Practice", "Staff creates Practice Pass code", st == 200 and d.get("ok") and len(d.get("code", "")) == 8, str(d)[:60])
+PCODE = d.get("code", "")
+check("Practice", "Practice code login works", urllib.request.Request, "")
+def _prac_login(code):
+    r = urllib.request.Request(B+"/api/practice/login", data=json.dumps({"code": code}).encode(),
+        method="POST", headers={"Content-Type": "application/json"})
+    op = urllib.request.build_opener(_NoRedirect)
+    try: resp = op.open(r, timeout=30)
+    except urllib.error.HTTPError as e: resp = e
+    sc = resp.headers.get("Set-Cookie", "")
+    tok = sc.split("ss_prac=")[1].split(";")[0] if "ss_prac=" in sc else None
+    return getattr(resp, "status", 0), tok
+pls, ptok = _prac_login(PCODE)
+check("Practice", "Student logs in with code", pls == 200 and ptok, str(pls))
+PH = {"Content-Type": "application/json", "Cookie": "ss_prac=" + ptok}
+check("Practice", "Wrong code rejected", _prac_login("ZZZZZZZZ")[0] == 403, "")
+st, d = req("POST", "/api/practice/start", {"branch": "CSE", "role": "Software / IT"}, headers=PH)
+check("Practice", "Student starts self-practice interview", st == 200 and len(d.get("questions", [])) >= 5, str(st))
+PMID = d.get("id", 0)
+st, d = req("POST", f"/api/practice/{PMID}/answer", {"no": 1, "text": "I am QA Student, CSE final year, I built a hostel mess feedback app with Flask, led 2 juniors, goal is backend developer."}, headers=PH)
+check("Practice", "Self-practice answer scored", st == 200 and d.get("score") is not None, str(st))
+st, d = req("POST", f"/api/practice/{PMID}/finish", {}, headers=PH)
+check("Practice", "Self-practice finish saves readiness", st == 200 and "overall" in d, str(st))
+check("Practice", "Student CANNOT touch college APIs",
+      req("GET", "/api/colleges/1/leads", headers=PH, noauth=True)[0] == 401, "")
+check("Practice", "Officer sees self-practice in careers summary",
+      req("GET", "/api/colleges/1/careers/summary")[0] == 200, "")
+check("Practice", "/practice page serves", req("GET", "/practice", raw=True)[1].find(b"Practice Code") > -1, "")
+
+
+# ── v0.8: reach (broadcast + test + seats) ──
+st, d = req("GET", "/api/colleges/1/broadcast/audience")
+check("Reach", "Broadcast audience counts consented leads", st == 200 and d.get("count", 0) >= 1, str(d)[:60])
+st, d = req("POST", "/api/colleges/1/broadcast",
+            {"text": "Namaste! Campus visits open this Saturday 10-4. Bring your rank card. Reply STOP to opt out."})
+check("Reach", "Broadcast queues to consented (mock mode)",
+      st == 200 and d.get("sent", 0) >= 1 and d.get("mode") == "mock", str(d)[:70])
+st, d = req("POST", "/api/colleges/1/broadcast", {"text": "short"})
+check("Reach", "Broadcast rejects tiny text", st == 422, str(st))
+st, d = req("POST", "/api/settings/test-whatsapp", {"phone": "9848123456"})
+check("Reach", "WhatsApp test-send (mock mode honest)",
+      st == 200 and d.get("mode") == "mock" and "logged" in str(d.get("note", "")), str(d)[:70])
+st, d = req("POST", "/api/chat/1", {"text": "CSE seats available aa? kottha seat unda?", "channel": "web"})
+rep = d.get("reply", "") if isinstance(d, dict) else ""
+check("Reach", "Seats answer: intake + honesty + visit CTA",
+      st == 200 and "intake" in rep and "campus visit" in rep and "guarantee" not in rep.lower(), rep[:70])
+st, d = req("POST", "/api/chat/1", {"text": "ECE seat", "channel": "web"})
+check("Reach", "Seats answer cites approved intake table",
+      st == 200 and any("intake table" in str(c.get("title", "")) for c in d.get("citations", [])), "")
+
+
+# ── v0.8.2: referrals/commissions + imports ──
+st, ls0 = req("GET", "/api/colleges/1/leads")
+lid = ls0[0]["id"]
+st, d = req("POST", f"/api/leads/{lid}", {"ref_username": "lakshmi", "commission_amt": 3000})
+check("Commissions", "Lead attributed to staff with ₹ amount", st == 200, str(st))
+st, d = req("POST", f"/api/leads/{lid}", {"stage": "joined"})
+check("Commissions", "Lead advanced to joined", st == 200 and d.get("stage") == "joined", str(d)[:50])
+st, d = req("GET", "/api/colleges/1/commissions")
+sm = {t["username"]: t for t in d.get("summaries", [])}
+check("Commissions", "Due ₹ computed on joined lead",
+      "lakshmi" in sm and sm["lakshmi"]["due"] == 3000 and sm["lakshmi"]["joined"] >= 1, str(sm)[:80])
+st, d = req("GET", f"/api/leads/{lid}/timeline")
+check("Commissions", "Drawer payload includes referral info",
+      st == 200 and d.get("ref", {}).get("username") == "lakshmi", str(d.get("ref"))[:60])
+st, d = req("POST", "/api/colleges/1/commissions/mark-paid", {"username": "lakshmi"})
+check("Commissions", "Mark-paid settles + logs", st == 200 and d.get("cleared", 0) >= 1, str(d)[:60])
+st, d = req("GET", "/api/colleges/1/commissions")
+sm = {t["username"]: t for t in d.get("summaries", [])}
+check("Commissions", "After settle: due 0, paid 3000",
+      "lakshmi" in sm and sm["lakshmi"]["due"] == 0 and sm["lakshmi"]["paid"] == 3000, str(sm)[:80])
+st, d = req("GET", "/api/colleges/1/backup.zip", raw=True)
+import io as _io, zipfile as _zf
+names = _zf.ZipFile(_io.BytesIO(d)).namelist() if st == 200 else []
+check("Exports", "Backup ZIP has interviews + CKP + leads CSVs",
+      st == 200 and "mock_interviews.csv" in names and "knowledge_pack.json" in names and "leads.csv" in names, str(names)[:80])
+CSV = "name,phone,town,branch,source\nImport A,9000000001,Proddatur,CSE,walk_in\nImport B,9000000002,Rajampet,ECE,\nDup,9000000001,Kadapa,CSE,\n"
+st, d = req("POST", "/api/colleges/1/leads/import", {"csv": CSV})
+check("Imports", "Leads CSV import: 2 imported, 1 duplicate skipped",
+      st == 200 and d.get("imported") == 2 and d.get("skipped") == 1, str(d)[:70])
+st, ls2 = req("GET", "/api/colleges/1/leads")
+imp = [l for l in ls2 if l.get("source") == "import"]
+check("Imports", "Imported leads: no consent (DPDP), scored",
+      len(imp) >= 2 and all(not l.get("consent") for l in imp), str(len(imp)))
+st, d = req("POST", "/api/colleges/1/leads/import", {"csv": "hello world\n1,2\n"})
+check("Imports", "Import rejects header-less CSV", st == 422, str(st))
+st, d = req("POST", "/api/colleges/1/ckp/import",
+            {"pack": {"college": {"about": "Import test college"}, "courses": [
+                {"name": "B.Tech CSE — import test", "code": "CSE", "intake": 111,
+                 "convener_fee": 35000, "mgmt_fee": 65000, "cutoff_note": ""}]}})
+check("Imports", "CKP import replaces pack (Owner)", st == 200 and d.get("courses") == 1, str(d)[:70])
+st, d = req("GET", "/api/colleges/1/ckp")
+ck = d if isinstance(d, dict) else {}
+check("Imports", "CKP reflects imported course", any(c.get("intake") == 111 for c in ck.get("courses", [])), "")
+
 for m, n, r, e in results:
     if m not in mods: mods.append(m)
 print("\n" + "═"*78)

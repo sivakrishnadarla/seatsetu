@@ -5,6 +5,10 @@
 <link rel="icon" type="image/png" href="/static/favicon.png">
 <meta name="theme-color" content="#0D9488">
 <title>SeatSetu — Admissions Chat</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0F766E">
+<link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+<link rel="icon" href="/static/favicon-32.png">
 <style>
   :root{--acc:#0D9488;--acc2:#0F766E;--bg:#F7FAF9;--panel:#ffffff;--txt:#12332E;--mut:#5B7470;--line:#DCE9E6}
   *{margin:0;padding:0;box-sizing:border-box;font-family:Inter,-apple-system,'Segoe UI',sans-serif}
@@ -27,12 +31,37 @@
   .consent{background:#FEF3C7;border:1px solid #F59E0B55;font-size:11px;color:#92400E;padding:9px 12px;display:flex;gap:8px;align-items:center}
   .consent input{accent-color:var(--acc)}
   .typing{align-self:flex-start;font-size:12px;color:var(--mut);padding:6px 10px}
+  .avat{width:34px;height:34px;border-radius:50%;background:#ffffff2b;display:flex;align-items:center;justify-content:center;
+        font-family:'Poppins',sans-serif;font-weight:700;font-size:15px;border:2px solid #ffffff55}
+  .ts{display:block;font-size:9.5px;color:#94a3a8;margin-top:3px}
+  .rate{display:flex;gap:6px;margin-top:5px}
+  .rate button{background:#fff;border:1px solid var(--line);border-radius:8px;font-size:12px;padding:3px 10px;cursor:pointer}
+  .rate button:hover{border-color:var(--acc)}
+  .mic{background:#F1F5F4!important;color:var(--acc2);width:42px!important;font-size:16px}
+  .mic.rec{background:#FEE2E2!important;color:#DC2626;animation:pulse 1s infinite}
+  @keyframes pulse{50%{transform:scale(1.08)}}
+  .typing:after{content:'⋯';animation:dots 1.2s infinite}
+  @keyframes dots{0%{content:'·'}50%{content:'⋯'}100%{content:'⋯⋯'}}
+  .chip.act{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:600}
+  .chip.act:hover{background:var(--acc2);color:#fff}
+  #apanel{display:none;background:#fff;border-top:1px dashed var(--acc);padding:12px;margin:0}
+  #apanel.show{display:block}
+  #apanel h4{font-size:13.5px;color:var(--ink2);margin-bottom:8px}
+  #apanel .frow2{display:flex;gap:7px;margin-bottom:7px;flex-wrap:wrap}
+  #apanel input,#apanel select{flex:1;min-width:110px;border:1px solid var(--line);border-radius:9px;padding:9px 11px;font-size:13px}
+  #apanel .go{flex:1;background:var(--acc);color:#fff;border:0;border-radius:9px;padding:10px;font-size:13.5px;font-weight:600;cursor:pointer}
+  #apanel .cx{background:#F1F5F4;color:var(--mut);border:1px solid var(--line);border-radius:9px;padding:10px 14px;font-size:13px;cursor:pointer}
+  #apanel label.c{font-size:11px;color:#92400E;display:flex;gap:6px;align-items:flex-start;margin-bottom:8px}
 </style>
 </head>
 <body>
-<header><div class="dot"></div><div><b id="colName">SeatSetu Chat</b><span>AI counselor · replies instantly · 9am-9pm counselor callback available</span></div></header>
+<header><div class="dot"></div><div class="avat" id="avat">S</div><div style="flex:1"><b id="colName">SeatSetu Chat</b><span>AI counselor · answers in 60s · book a visit below 📅</span></div></header>
+<div id="installChip" onclick="installApp()" style="display:none;margin:8px 12px 0;padding:7px 12px;background:#ECFDF5;border:1px solid #A7F3D0;border-radius:10px;font-size:12px;color:#0F766E;cursor:pointer">📲 Install SeatSetu on this phone — one tap, works offline</div>
 <div id="log"></div>
+<div id="apanel"></div>
 <div class="chips" id="chips">
+  <span class="chip act" onclick="openVisit()">📅 Book campus visit</span>
+  <span class="chip act" onclick="openBrochure()">📄 Get brochure (PDF)</span>
   <span class="chip" onclick="quick('CSE fee enta? hostel unda?')">CSE fee enta? hostel unda?</span>
   <span class="chip" onclick="quick('What are your placements?')">Placements?</span>
   <span class="chip" onclick="quick('Bus route Proddatur nunchi unda?')">Bus route?</span>
@@ -44,7 +73,7 @@
   <label for="consentBox">I agree that the college may contact me about admissions (DPDP consent). <b>Optional</b> — needed only if you share your number.</label>
 </div>
 <div style="text-align:center;font-size:11.5px;color:#62807a;padding:3px">Powered by <a href="https://poojasoftsolutions.com" target="_blank" rel="noopener" style="color:#0F766E;font-weight:600;text-decoration:none">Pooja Soft Solutions</a> · <a href="tel:+919247105525" style="color:#0F766E;text-decoration:none">📞 92471 05525</a></div><div class="composer">
-  <input id="in" placeholder="Type in Telugu or English…" onkeydown="if(event.key==='Enter')send()">
+  <button class="mic" id="mic" title="Speak in Telugu/English" onclick="toggleMic()">🎤</button><input id="in" placeholder="Type or 🎤 speak in Telugu or English…" onkeydown="if(event.key==='Enter')send()">
   <button onclick="send()">➤</button>
 </div>
 <script>
@@ -53,12 +82,73 @@ let convId=null;
 const $=q=>document.querySelector(q);
 (async function(){try{const i=await (await fetch(`/api/widget/${CID}/info`)).json();
   $('#colName').textContent=(i.short||i.name)+' — AI Counselor';
-  addMsg('ai',`నమస్తే! 🙏 / Hello! I'm the ${i.short||i.name} AI counselor. Ask me about courses, fees, hostel, bus routes or placements — in Telugu or English.`);}catch(e){$('#colName').textContent='Admissions Chat'}})();
+  INFO=i||{};document.getElementById('avat').textContent=(i.short||i.name||'S')[0];addMsg('ai',`నమస్తే! 🙏 / Hello! I'm the ${i.short||i.name} AI counselor. Ask me about courses, fees, hostel, bus routes or placements — in Telugu or English.\nYou can also 📅 book a campus visit or 📄 get our brochure right here.`);}catch(e){$('#colName').textContent='Admissions Chat'}})();
+let aiCount=0;
 function addMsg(role,text,cites,flag){const d=document.createElement('div');d.className='msg '+role;d.textContent=text;
   if(cites&&cites.length){const c=document.createElement('span');c.className='cite';c.textContent='📚 '+cites.map(x=>x.title).join(' · ');d.appendChild(c)}
   if(flag){const f=document.createElement('span');f.className='flag';f.textContent='✓ answered honestly from approved data only';d.appendChild(f)}
+  const ts=document.createElement('span');ts.className='ts';ts.textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});d.appendChild(ts);
+  if(role==='ai'){aiCount++;
+    if(aiCount%4===0){const r=document.createElement('div');r.className='rate';
+      r.innerHTML='<button onclick="sendRate(true,this)">👍 Helpful</button><button onclick="sendRate(false,this)">👎 Not clear</button>';
+      d.appendChild(r)}}
   $('#log').appendChild(d);$('#log').scrollTop=1e9}
+async function sendRate(helpful,btn){btn.parentElement.innerHTML='<span style="font-size:11px;color:#0F766E">'+(helpful?'🙏 Thank you!':'Sorry — a counselor will explain better on call.')+'</span>';
+  try{await fetch(`/api/widget/${CID}/feedback`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({conversation_id:convId,helpful:helpful})})}catch(e){}}
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;
+  const c=document.getElementById('installChip');if(c)c.style.display='block'});
+function installApp(){if(deferredPrompt){deferredPrompt.prompt();deferredPrompt=null;
+  const c=document.getElementById('installChip');if(c)c.style.display='none'}}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(()=>{})}
+let recog=null,recOn=false;
+function toggleMic(){const b=document.getElementById('mic');
+ if(recOn){recog&&recog.stop();return}
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!SR){b.style.display='none';alert('Voice input works in Chrome / Edge — or just type your question.');return}
+ if(!recog){recog=new SR();recog.lang='te-IN';recog.interimResults=false;
+  recog.onresult=e=>{const t=e.results[0][0].transcript;$('#in').value=t;send()};
+  recog.onend=()=>{recOn=false;b.classList.remove('rec');b.textContent='🎤'};
+  recog.onerror=()=>{recOn=false;b.classList.remove('rec');b.textContent='🎤'}}
+ recOn=true;b.classList.add('rec');b.textContent='🔴';
+ try{recog.start()}catch(e){recOn=false;b.classList.remove('rec')}}
 function quick(t){$('#in').value=t;send()}
+const DAYS=[...Array(8)].map((_,i)=>{const d=new Date(Date.now()+864e5*(i+1));return d.toISOString().slice(0,10)});
+let INFO={courses:[]};
+async function panel(formHtml,submitFn){
+  const p=$('#apanel');p.innerHTML=formHtml+`<div style="display:flex;gap:7px"><button class="go" id="pGo">Submit</button><button class="cx" id="pCx">Cancel</button></div>`;
+  p.classList.add('show');$('#chips').style.display='none';
+  $('#pCx').onclick=()=>{p.classList.remove('show');p.innerHTML='';$('#chips').style.display='flex'};
+  $('#pGo').onclick=()=>submitFn(p);
+}
+function openVisit(){
+  const opts=INFO.courses.map(c=>`<option value="${c.code}">${c.code}</option>`).join('');
+  panel(`<h4>📅 Book your campus visit — free, Mon–Sat</h4>
+   <div class="frow2"><input id="vName" placeholder="Student / parent name"><input id="vPhone" placeholder="10-digit mobile"></div>
+   <div class="frow2"><select id="vDate">${DAYS.map(d=>`<option value="${d}">${new Date(d+'T06:00').toDateString().slice(0,10)}</option>`).join('')}</select>
+   <select id="vBranch"><option value="">Branch…</option>${opts}</select></div>
+   <div class="frow2"><input id="vTown" placeholder="Your town (optional)"></div>
+   <label class="c"><input type="checkbox" id="vConsent" checked> I agree the college may contact me about this visit (DPDP consent)</label>`,
+   async p=>{
+     const r=await (await fetch(`/api/widget/${CID}/book_visit`,{method:'POST',headers:{'Content-Type':'application/json'},
+       body:JSON.stringify({name:p.querySelector('#vName').value,phone:p.querySelector('#vPhone').value,
+         date:p.querySelector('#vDate').value,branch:p.querySelector('#vBranch').value,
+         town:p.querySelector('#vTown').value,consent:p.querySelector('#vConsent').checked})})).json();
+     if(r.ok){p.classList.remove('show');p.innerHTML='';$('#chips').style.display='flex';addMsg('ai',r.message,null,true)}
+     else alert(r.error||'Please check the details')});
+}
+function openBrochure(){
+  panel(`<h4>📄 Get the college brochure (PDF) on WhatsApp-able link</h4>
+   <div class="frow2"><input id="bName" placeholder="Your name"><input id="bPhone" placeholder="10-digit mobile"></div>
+   <label class="c"><input type="checkbox" id="bConsent" checked> I agree the college may contact me about admissions (DPDP consent)</label>`,
+   async p=>{
+     const r=await (await fetch(`/api/widget/${CID}/brochure_lead`,{method:'POST',headers:{'Content-Type':'application/json'},
+       body:JSON.stringify({name:p.querySelector('#bName').value,phone:p.querySelector('#bPhone').value})})).json();
+     if(r.ok){p.classList.remove('show');p.innerHTML='';$('#chips').style.display='flex';
+       addMsg('ai','Here is your brochure 📄 — opening now. Our officer will also WhatsApp it to you. Anything else you want to know about courses or fees?',null,true);
+       window.open(r.url,'_blank')}
+     else alert(r.error||'Please check the details')});
+}
 async function send(){const t=$('#in').value.trim();if(!t)return;$('#in').value='';addMsg('parent',t);
   const ty=document.createElement('div');ty.className='typing';ty.textContent='typing…';$('#log').appendChild(ty);$('#log').scrollTop=1e9;
   try{const r=await (await fetch(`/api/chat/${CID}`,{method:'POST',headers:{'Content-Type':'application/json'},

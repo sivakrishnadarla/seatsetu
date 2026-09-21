@@ -54,24 +54,28 @@
 </style>
 </head>
 <body>
+<div id="bell" title="What to do now — red = urgent" onclick="document.querySelector('#nav button[data-v=overview]').click()" style="position:fixed;top:14px;right:18px;cursor:pointer;font-size:21px;z-index:60">🔔<b id="bellBadge" style="position:absolute;top:-7px;right:-11px;background:#DC2626;color:#fff;border-radius:10px;font-size:10.5px;padding:1px 5px;display:none;font-family:var(--font-body,Inter)"></b></div>
 <aside>
   <div class="logo">
     <svg width="30" height="30" viewBox="0 0 40 40"><rect x="2" y="2" width="36" height="36" rx="9" fill="#0d9488"/><path d="M20 8L33 15L20 22L7 15Z" fill="#fff"/><path d="M12 19v7c0 3 16 3 16 0v-7" stroke="#fff" stroke-width="2.6" fill="none"/></svg>
     <div><img src="/static/logo.png" alt="SeatSetu" style="height:38px;border-radius:6px"><span style="margin-top:4px">Every seat. Filled.</span></div>
   </div>
   <nav id="nav">
-    <button data-v="overview" class="on">📊 Overview</button>
-    <button data-v="leads">👥 Leads</button>
-    <button data-v="chats">💬 Chats (AI)</button>
-    <button data-v="tasks">📞 Counselor To-Do</button>
-    <button data-v="followups">⏰ Follow-ups</button>
-    <button data-v="reports">📊 Reports</button>
-    <button data-v="ckp">📚 Knowledge Pack</button>
+    <button data-v="overview" class="on" title="Today's numbers, ROI and what to do now">📊 Overview</button>
+    <button data-v="leads" title="Every parent enquiry — full story per lead">👥 Leads</button>
+    <button data-v="chats" title="What parents asked the AI and how it answered">💬 Chats (AI)</button>
+    <button data-v="tasks" title="Your call list — work top to bottom">📞 Counselor To-Do</button>
+    <button data-v="followups" title="Automatic day-2/7/12 parent nudges">⏰ Follow-ups</button>
+    <button data-v="reports" title="Funnel, sources, export">📊 Reports</button>
+    <button data-v="ckp" title="Approved college facts the AI is allowed to say">📚 Knowledge Pack</button>
+    <button data-v="settings" title="Ad spend, Monday digest, backup">⚙️ Settings</button>
+    <button data-v="staff" title="Give every staff member their own login">👤 Staff &amp; Roles</button>
+    <button data-v="help" title="Plain-words guide for your role">❓ Help</button>
     <button data-v="widget">🟢 Website Widget</button>
     <button data-v="playbook">🧭 Operations Playbook</button>
     <button data-v="accred">🎯 SeatSetu Accred</button>
     <button data-v="careers">💼 SeatSetu Careers</button>
-    <button data-v="comply">🛡️ Compliance & Log</button>
+    <button data-v="comply">🛡️ Compliance &amp; Log</button>
   </nav>
   <div class="muted" style="margin:6px 0 2px;font-size:11.5px;color:var(--mut)">A product by <a href="https://poojasoftsolutions.com" target="_blank" rel="noopener" style="color:#0F766E;font-weight:600">Pooja Soft Solutions</a></div>
   <div class="muted" style="font-size:11.5px;color:var(--mut)">📞 <a href="tel:+919247105525" style="color:var(--teal-deep)">92471 05525</a> · 💬 <a href="https://wa.me/917569192211" target="_blank" style="color:var(--teal-deep)">75691 92211</a></div><div class="tenantbox"><div class="muted">Active college</div><select id="collegeSel"></select></div>
@@ -79,17 +83,26 @@
 <main>
   <section class="view on" id="v-overview">
     <h1>Admissions Command Center <span style="font-size:12px;color:var(--acc2);font-weight:600">SeatSetu Admissions</span></h1><div class="sub">AI counselor · every lead · every rupee tracked → cost-per-joined-student</div>
+    <div id="welcome" style="display:none;background:linear-gradient(135deg,#0D9488,#0F766E);color:#fff;border-radius:12px;padding:10px 14px;font-size:13.5px;margin-bottom:12px"></div>
+    <div class="card" style="margin-bottom:12px;border-left:5px solid var(--amber)"><h3>🎯 What to do today</h3><div id="nba" class="muted">Computing…</div></div>
     <div class="grid" id="kpis"></div>
+    <div class="row" id="anaRow" style="margin-top:12px"></div>
     <div class="row">
       <div class="card" style="flex:1;min-width:280px"><h3>Pipeline funnel</h3><div class="funnel" id="funnel"></div></div>
       <div class="card" style="flex:1;min-width:280px"><h3>Source attribution (leads → visits → joined)</h3><table><tbody id="srcTbl"></tbody></table></div>
       <div class="card" style="flex:1;min-width:240px"><h3>Branch interest</h3><div id="branchList" class="muted"></div></div>
     </div>
-    <div class="card" style="margin-top:12px"><h3>Investor demo script (3 min)</h3><div class="muted">① Open the Website Widget tab → chat as a Telugu parent (ask "CSE fee enta? hostel unda?") → see instant grounded reply · ② Ask "100% placement guarantee unda?" → watch the honest refusal · ③ Meta lead webhook → lead + greeting in seconds (Leads tab) · ④ Run follow-ups → WhatsApp sequence fires · ⑤ Compliance tab → consent ledger + full audit log.</div></div>
+    <div class="card" style="margin-top:12px"><h3>3-minute demo script (show this to any principal)</h3><div class="muted">① Open the Website Widget tab → chat as a Telugu parent (ask "CSE fee enta? hostel unda?") → see instant grounded reply · ② Ask "100% placement guarantee unda?" → watch the honest refusal · ③ Meta lead webhook → lead + greeting in seconds (Leads tab) · ④ Run follow-ups → WhatsApp sequence fires · ⑤ Compliance tab → consent ledger + full audit log.</div></div>
   </section>
 
   <section class="view" id="v-leads">
     <h1>Leads</h1><div class="sub">Scored · source-attributed · consent-gated. Advance stages as counselors act.</div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px">
+      <button class="btn ghost" onclick="document.getElementById('impFile').click()">⬆ Import CSV</button>
+      <input type="file" id="impFile" accept=".csv,text/csv" style="display:none" onchange="importLeads(this.files[0])">
+      <button class="btn ghost" onclick="window.open(`/api/colleges/${cid}/reports/leads.csv`,'_blank')">⬇ Export CSV</button>
+      <span class="muted" style="font-size:12px">Import format: <b>name, phone, town, branch, source, campaign, rank</b> — duplicates skipped, imported parents never auto-messaged (no consent yet).</span>
+    </div>
     <table><thead><tr><th>Name</th><th>Source</th><th>Stage</th><th>Score</th><th>Branch/Rank</th><th>Consent</th><th>Assigned</th><th>Next</th><th></th></tr></thead><tbody id="leadBody"></tbody></table>
   </section>
 
@@ -107,11 +120,27 @@
     <h1>Follow-up Engine</h1><div class="sub">Bilingual WhatsApp sequences: greeting (instant) → day-2 nudge → day-7 visit invite → day-12 reminder. Consent-gated.</div>
     <button class="btn" onclick="runFollowups()">▶ Run scheduler now</button> <span id="fuOut" class="muted"></span>
     <div style="height:12px"></div>
+    <div class="card" style="border-left:5px solid var(--amber);margin-bottom:12px">
+      <h3>📣 Broadcast to parents (consented only)</h3>
+      <div class="muted" style="font-size:12px;margin-bottom:6px">One message to every parent who gave consent and is still in the pipeline — fee-alert, visit drive, last-date reminder. Only text you'd be proud to show anyone: no false urgency, no promises. అందరికీ ఒకే సందేశం — అంగీకరించిన వారికే.</div>
+      <textarea id="bcText" class="f" style="width:100%;min-height:64px" maxlength="600" placeholder="e.g. Namaste! RIT Kadapa is open for campus visits this Saturday 10am-4pm. Bring your EAPCET rank card — our admission officer will explain branch options & fees. Reply STOP to opt out."></textarea>
+      <div style="display:flex;gap:10px;align-items:center;margin-top:8px;flex-wrap:wrap">
+        <span id="bcCount" class="muted" style="font-size:12.5px">Audience: …</span>
+        <button class="btn" onclick="sendBroadcast()">📣 Send broadcast</button>
+      </div>
+      <div id="bcOut" class="muted" style="font-size:12.5px;margin-top:6px"></div>
+    </div>
     <table><thead><tr><th>Lead</th><th>Stage</th><th>Step</th><th>Next send</th><th>Due now</th></tr></thead><tbody id="fuBody"></tbody></table>
   </section>
 
   <section class="view" id="v-ckp">
     <h1>College Knowledge Pack</h1><div class="sub">The AI answers ONLY from these approved facts (tables for exact numbers + prose for grounding). One guided session ≈ 45-90 min with the Principal.</div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px">
+      <button class="btn ghost" onclick="window.open(`/api/colleges/${cid}/backup.zip`,'_blank')">⬇ Export pack (ZIP incl. knowledge_pack.json)</button>
+      <button class="btn ghost" onclick="document.getElementById('ckpFile').click()">⬆ Import knowledge_pack.json</button>
+      <input type="file" id="ckpFile" accept=".json,application/json" style="display:none" onchange="importCkp(this.files[0])">
+      <span class="muted" style="font-size:12px">Owner/Principal only · replaces courses, hostels, buses, placements & dates after confirm.</span>
+    </div>
     <div class="card" style="margin-bottom:12px"><h3>About & location</h3>
       <textarea id="ckpAbout"></textarea><textarea id="ckpLocation" placeholder="Location note — highway, landmarks, distances"></textarea>
       <h3 style="margin-top:8px">Admission process</h3><textarea id="ckpProcess"></textarea>
@@ -120,6 +149,41 @@
       <button class="btn grn" style="margin-top:10px" onclick="saveCkp()">💾 Save & re-index Knowledge Pack</button> <span id="ckpOut" class="muted"></span></div>
   </section>
 
+  <section class="view" id="v-settings">
+    <h1>Settings & Console</h1><div class="sub">Ad spend, system status, weekly digest and your data — the principal's control room.</div>
+    <div class="row">
+      <div class="card" style="flex:1"><h3>System status</h3><div id="envStatus" class="muted">…</div></div>
+      <div class="card" style="flex:1.4"><h3>💰 Ad spend this season (₹ per source)</h3>
+        <div class="muted" style="font-size:12px;margin-bottom:6px">Used to compute cost-per-lead & cost-per-joined-student — your ROI proof.</div>
+        <div id="spendInputs" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+        <button class="btn grn" onclick="saveSpend()" style="margin-top:8px">Save spend</button></div>
+    </div>
+    <div class="row">
+      <div class="card" style="flex:1"><h3>📢 Monday digest (for the principal)</h3>
+        <div class="muted" style="font-size:12.5px;margin-bottom:8px">Last-7-days briefing in plain language — paste it into the principal's WhatsApp every Monday, 9am.</div>
+        <button class="btn" onclick="copyDigest()">📋 Copy WhatsApp digest</button>
+        <button class="btn ghost" onclick="viewDigest()">Preview</button>
+        <div id="digestOut" style="display:none;background:#F7FAF9;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:12.5px;margin-top:8px;white-space:pre-wrap"></div></div>
+      <div class="card" style="flex:1"><h3>🗄️ Your data, yours</h3>
+        <div class="muted" style="font-size:12.5px;margin-bottom:8px">Full backup: leads, conversations, careers, Knowledge Pack (CSV+JSON).</div>
+        <button class="btn" onclick="window.open(`/api/colleges/${cid}/backup.zip`,'_blank')">⬇ Download backup (ZIP)</button></div>
+      <div class="card" style="flex:1"><h3>🧪 Test WhatsApp sending</h3>
+        <div class="muted" style="font-size:12.5px;margin-bottom:6px">Mock mode logs only. Add <b>WHATSAPP_TOKEN</b> + <b>WHATSAPP_PHONE_ID</b> in Vercel env vars to go live — then test here.</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+          <input class="f" id="waPhone" placeholder="Your mobile 10-digit" style="width:170px">
+          <button class="btn ghost" onclick="testWA()">Send test message</button></div>
+        <div id="waOut" class="muted" style="font-size:12.5px;margin-top:6px"></div></div>
+    </div>
+  </section>
+
+  <section class="view" id="v-staff">
+    <h1>Staff &amp; Roles</h1><div class="sub">Every person gets their own login — you decide exactly what each one sees. <span style="color:var(--mut)">ప్రతి సిబ్బందికి ప్రత్యేక లాగిన్ — ఎవరికి ఏమేమి కనిపించాలో మీరే నిర్ణయించండి.</span></div>
+    <div id="staffWrap"><div class="muted">Opening console…</div></div>
+  </section>
+  <section class="view" id="v-help">
+    <h1>Help — in plain words</h1><div class="sub">Every screen explained for your role. <span style="color:var(--mut)">మీ పాత్రకు అవసరమైన వివరణ — సులభమైన భాషలో.</span></div>
+    <div id="helpWrap"><div class="muted">Loading…</div></div>
+  </section>
   <section class="view" id="v-widget">
     <h1>Website Widget</h1><div class="sub">Embed the AI counselor on the college website. WhatsApp uses the college's own number (Cloud API).</div>
     <div class="row">
@@ -178,8 +242,17 @@
         <div class="row"><input class="f" id="miName" placeholder="Student name" style="flex:1"><input class="f" id="miRoll" placeholder="Roll no" style="flex:1"></div>
         <div class="row"><select class="f" id="miBranch" style="flex:1"><option>CSE</option><option>CSE-AIML</option><option>ECE</option><option>MECH</option><option>CIVIL</option></select>
         <select class="f" id="miRole" style="flex:1"><option>Software / IT</option><option>Core Engineering</option><option>Business / Support</option></select></div>
-        <button class="btn" onclick="startInterview()">🎤 Begin interview (5 questions)</button>
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><button class="btn" onclick="startInterview()">🎤 Begin interview (5 questions)</button><label style="font-size:12.5px"><input type="checkbox" id="miVoice" checked onchange="MIVoice=this.checked"> 🔊 Interviewer speaks (en-IN)</label><label style="font-size:12.5px"><input type="checkbox" id="miStrict" onchange="MIPanel=this.checked?'strict':'friendly'"> 😤 Strict panel (harder scoring)</label></div>
         <div id="miFlow" style="margin-top:12px"></div>
+      </div>
+      <div class="card" style="flex:1;min-width:300px">
+        <h3>🎟️ Student Practice Passes <span class="tag info">self-practice</span></h3>
+        <div class="muted" style="font-size:12px;margin-bottom:6px">Give a student an 8-char code — they open <b>/practice</b> on any phone and practise voice mocks unlimited. You see every attempt here (tagged self-practice) + it files NAAC evidence. Students never see college data.</div>
+        <div class="row"><input class="f" id="ppName" placeholder="Student name" style="flex:1"><input class="f" id="ppRoll" placeholder="Roll no" style="width:110px;flex:0">
+        <select class="f" id="ppBranch" style="width:110px;flex:0"><option>CSE</option><option>CSE-AIML</option><option>ECE</option><option>MECH</option><option>CIVIL</option></select>
+        <button class="btn" style="padding:8px 12px" onclick="createPass()">Create code</button></div>
+        <div id="ppCred" style="display:none;margin-top:8px"></div>
+        <div id="ppList" style="margin-top:8px"></div>
       </div>
       <div class="card" style="flex:1;min-width:300px">
         <h3>Training evidence (this season)</h3>
@@ -199,6 +272,9 @@
 
   <section class="view" id="v-reports">
     <h1>Reports</h1><div class="sub">One-click management packs, registers and compliance summaries — print or save as PDF, ready for the principal's desk.</div>
+    <div class="card" style="border-left:5px solid var(--amber);margin-bottom:12px"><h3>💸 Referrals & commissions</h3>
+      <div class="muted" style="font-size:12px;margin-bottom:6px">Staff who bring references on commission basis: DUE = leads that reached <b>joined</b> and are not settled yet. Attribute leads in Leads → open a lead → 💸 Referral & commission.</div>
+      <div id="commWrap" class="muted">…</div></div>
     <div class="row" style="margin-bottom:12px">
       <div class="card" style="flex:1.4"><h3>Generate</h3>
         <label class="muted">Period:</label>
@@ -250,10 +326,10 @@ async function api(p,o){const r=await fetch(p,o);if(r.status===401){location.hre
 async function loadColleges(){colleges=await api('/api/colleges');const s=$('#collegeSel');s.innerHTML=colleges.map(c=>`<option value="${c.id}">${esc(c.short||c.name)}</option>`).join('');cid=colleges[0]?.id||0;if(cid)refreshAll()}
 $('#collegeSel').onchange=e=>{cid=+e.target.value;refreshAll()};
 document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#nav button').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));$('#v-'+b.dataset.v).classList.add('on');route(b.dataset.v)});
-function route(v){if(v==='overview')loadOverview();if(v==='leads')loadLeads();if(v==='chats')loadChats();if(v==='tasks')loadTasks();if(v==='followups')loadFu();if(v==='ckp')loadCkp();if(v==='accred')loadAccred();if(v==='careers')loadCareers();if(v==='playbook')renderPlaybook();if(v==='widget')loadWidget();if(v==='comply')loadComply();if(v==='reports')loadReports()}
-function refreshAll(){loadOverview();loadLeads();loadWidget()}
+function route(v){if(v==='overview'){loadOverview();loadNBA();loadAnalytics()};if(v==='leads')loadLeads();if(v==='chats')loadChats();if(v==='tasks')loadTasks();if(v==='followups')loadFu();if(v==='ckp'){loadCkp();loadCompetitors()}if(v==='accred')loadAccred();if(v==='careers'){loadCareers();loadPasses()}if(v==='playbook')renderPlaybook();if(v==='widget')loadWidget();if(v==='comply')loadComply();if(v==='reports'){loadReports();loadCommissions()}if(v==='settings')loadSettings();if(v==='staff')loadStaff();if(v==='help')loadHelp()}
+function refreshAll(){loadBell();loadOverview();loadAnalytics();loadLeads();loadWidget()}
 
-async function loadOverview(){if(!cid)return;const d=await api(`/api/colleges/${cid}`);
+async function loadOverview(){if(!cid)return;loadNBA();const d=await api(`/api/colleges/${cid}`);
   const j=d.funnel.joined||0;
   $('#kpis').innerHTML=`<div class="card"><h3>Total leads</h3><div class="big">${d.total_leads}</div></div>
   <div class="card"><h3>Joined 🎓</h3><div class="big" style="color:var(--ok)">${j}</div></div>
@@ -268,7 +344,7 @@ async function loadOverview(){if(!cid)return;const d=await api(`/api/colleges/${
 
 async function loadLeads(){if(!cid)return;const ls=await api(`/api/colleges/${cid}/leads`);
   const stages=['new','ai_engaged','contacted','interested','visit_booked','visited','applied','seat_booked','joined','lost'];
-  $('#leadBody').innerHTML=ls.map(l=>`<tr><td>${esc(l.name)||'—'}<div class="muted">${esc(l.phone)} · ${esc(l.town||'')}</div></td><td class="muted">${esc(l.source)}${l.campaign?'<div>'+esc(l.campaign)+'</div>':''}</td>
+  $('#leadBody').innerHTML=ls.map(l=>`<tr onclick="leadDrawer(${l.id})" style="cursor:pointer"><td>${esc(l.name)||'—'}<div class="muted">${esc(l.phone)} · ${esc(l.town||'')}</div></td><td class="muted">${esc(l.source)}${l.campaign?'<div>'+esc(l.campaign)+'</div>':''}</td>
   <td><select class="f" onchange="setStage(${l.id},this.value)">${stages.map(s=>`<option ${s===l.stage?'selected':''}>${s}</option>`).join('')}</select></td>
   <td><b>${l.score}</b></td><td>${l.branch_interest||'—'}<div class="muted">${l.rank_or_marks||''}</div></td>
   <td>${l.consent?'<span class="tag ok">✓</span>':'<span class="tag bad">✗</span>'}</td><td class="muted">${l.assigned}</td><td class="muted">${l.next_followup||'—'}</td>
@@ -278,13 +354,25 @@ async function stopLead(id){await api(`/api/leads/${id}/stop`,{method:'POST'});t
 
 async function loadChats(){if(!cid)return;const cs=await api(`/api/colleges/${cid}/conversations`);
   $('#chatList').innerHTML=cs.map(c=>`<div class="chat"><b>${esc(c.lead)}</b> <span class="tag info">${c.channel}</span> ${c.status==='handed_off'?'<span class="tag bad">handed off</span>':''}
-  ${c.messages.map(m=>`<div class="msg ${m.role}">${m.text}${m.citations&&m.citations.length?'<span class="cite">📚 '+m.citations.map(x=>x.title+' ('+x.source+')').join(' · '):''}${m.flagged?'<span class="cite">⚠️ trap-question handled honestly</span>':''}</div>`).join('')}</div>`).join('')||'<div class="muted">No conversations yet — open the widget and chat.</div>'}
+  ${c.messages.map(m=>`<div class="msg ${m.role}">${m.text}${m.citations&&m.citations.length?'<span class="cite">📚 '+m.citations.map(x=>x.title+' ('+x.source+')').join(' · '):''}${m.flagged?'<span class="cite">⚠️ trap-question handled honestly</span>':''}</div>`).join('')} <button class="btn ghost" style="padding:2px 8px;font-size:11px" onclick="coachAsk(${c.id},this)">✨ Reply idea</button></div>`).join('')||'<div class="muted">No conversations yet — open the widget and chat.</div>'}
 
 async function loadTasks(){if(!cid)return;const ts=await api(`/api/colleges/${cid}/tasks`);
   $('#taskBody').innerHTML=ts.map(t=>`<tr><td><span class="tag ${t.kind==='handoff'?'bad':'info'}">${t.kind}</span></td><td>${esc(t.lead)}</td><td class="muted">${esc(t.phone)}</td><td>${esc(t.note)}</td><td class="muted">${esc(t.assigned)}</td><td><button class="btn grn" onclick="taskDone(${t.id})">✓ Done</button></td></tr>`).join('')||'<tr><td colspan="6" class="muted">Inbox zero.</td></tr>'}
 async function taskDone(id){await api(`/api/tasks/${id}/done`,{method:'POST'});loadTasks()}
 
+async function sendBroadcast(){const text=$('#bcText').value.trim();
+ if(text.length<10)return toast('Write a real message first (10+ chars).');
+ if(!confirm('Send this message to ALL consented parents in the pipeline?'))return;
+ const r=await fetch(`/api/colleges/${cid}/broadcast`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text})});
+ const d=await r.json();
+ $('#bcOut').innerHTML=r.ok?`✅ Queued for <b>${d.sent}</b> parent(s) · mode: <b>${d.mode}</b> — ${d.note}`:('❌ '+(d.detail||'failed'));
+ if(r.ok){$('#bcText').value='';loadFu()}}
+async function testWA(){const phone=$('#waPhone').value.trim();if(phone.replace(/\D/g,'').length<10)return toast('Enter a 10-digit mobile');
+ const r=await fetch('/api/settings/test-whatsapp',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone})});
+ const d=await r.json();
+ $('#waOut').innerHTML=r.ok?`Mode: <b>${d.mode}</b> — ${d.mode==='live'?(d.sent?'✅ sent! Check the phone.':'❌ API rejected: '+(d.note||'check token/phone-id')):'logged only (not sent). '+(d.note||'')}`:('❌ '+(d.detail||'failed'))}
 async function loadFu(){if(!cid)return;const q=await api(`/api/colleges/${cid}/followups`);
+ try{const a=await api(`/api/colleges/${cid}/broadcast/audience`);$('#bcCount').textContent='Audience: '+a.count+' parent(s) — consented, still in pipeline'}catch(e){}
   $('#fuBody').innerHTML=q.map(f=>`<tr><td>${esc(f.name)}</td><td>${esc(f.stage)}</td><td>step ${f.seq_step}</td><td class="muted">${f.next||'—'}</td><td>${f.due_now?'<span class="tag warn">DUE</span>':'<span class="tag ok">scheduled</span>'}</td></tr>`).join('')}
 async function runFollowups(){if(!cid)return;$('#fuOut').innerHTML='<span class="spinner"></span> running…';
   const r=await api(`/api/run/followups/${cid}`);$('#fuOut').textContent=`sent ${r.sent.length} · blocked ${r.blocked.length} (consent/kill-switch)`;toast('Follow-ups executed');loadFu()}
@@ -294,6 +382,30 @@ async function loadCkp(){if(!cid)return;const k=await api(`/api/colleges/${cid}/
   const cols=[['name','Course'],['code','Code'],['intake','Intake'],['convener_fee','Convener ₹/yr'],['mgmt_fee','Mgmt ₹/yr'],['mgmt_note','Note'],['cutoff_note','Cutoff']];
   window._ckpCourses=k.courses;
   $('#ckpCourses').innerHTML=`<table><thead><tr>${cols.map(c=>`<th>${c[1]}</th>`).join('')}</tr></thead><tbody>${k.courses.map((c,i)=>`<tr>${cols.map(c=>`<td><input class="f" data-i="${i}" data-k="${c[0]}" value="${esc(k.courses[i][c[0]]??'')}" oninput="updCourse(${i},'${c[0]}',this.value)"></td>`).join('')}</tr>`).join('')}</tbody></table>`}
+async function loadCompetitors(){if(!cid)return;
+ if(!document.getElementById('compWrap'))document.getElementById('v-ckp').insertAdjacentHTML('beforeend','<div class="card" style="margin-top:12px" id="compWrap"></div>');
+ let rows=[];try{rows=await api(`/api/colleges/${cid}/competitors`)}catch(e){}
+ $('#compWrap').innerHTML=`<h3>🏫 Comparison Pack — nearby colleges (public data only)</h3>
+ <div class="muted" style="font-size:12px;margin-bottom:6px">When a parent asks "our college vs THIS college?", the AI answers from THESE numbers with the source — never invented, never rude, then books a visit. పోటీ కాలేజీల ప్రజా సమాచారం మాత్రమే.</div>
+ ${(rows||[]).map(r=>`<div style="display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px;margin:6px 0;flex-wrap:wrap"><b>${esc(r.name)}</b><span class="muted">${esc(r.town)} ${esc(r.distance_km)}</span><span class="tag">₹${esc(r.annual_fee)}/yr</span><span class="tag">${esc(r.placements_pct)} placed</span><span class="muted" style="font-size:11.5px">${esc(r.closing_rank_note||'')}</span><span style="flex:1"></span><button class="btn ghost" style="padding:3px 8px" onclick="delComp(${r.id})">✖</button></div>`).join('')||'<div class="muted" style="font-size:12.5px;margin:6px 0">None added yet — add the 2-3 colleges parents always ask about.</div>'}
+ <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;align-items:flex-end">
+  <div><div class="muted" style="font-size:11px">Name*</div><input class="f" id="cpName" style="width:170px" placeholder="Sri Vision Inst."></div>
+  <div><div class="muted" style="font-size:11px">Town</div><input class="f" id="cpTown" style="width:120px"></div>
+  <div><div class="muted" style="font-size:11px">Dist.</div><input class="f" id="cpDist" style="width:70px" placeholder="12 km"></div>
+  <div><div class="muted" style="font-size:11px">Fee ₹/yr</div><input class="f" id="cpFee" style="width:90px" placeholder="78000"></div>
+  <div><div class="muted" style="font-size:11px">% placed</div><input class="f" id="cpPlc" style="width:80px" placeholder="62%"></div>
+  <div><div class="muted" style="font-size:11px">Rank note</div><input class="f" id="cpRank" style="width:150px" placeholder="CSE closes ~65k"></div>
+  <div><div class="muted" style="font-size:11px">Their strength</div><input class="f" id="cpTheir" style="width:150px"></div>
+  <div><div class="muted" style="font-size:11px">Our edge</div><input class="f" id="cpEdge" style="width:150px"></div>
+  <div><div class="muted" style="font-size:11px">Source</div><input class="f" id="cpSrc" style="width:170px" value="AICTE approvals / public disclosures"></div>
+  <button class="btn" onclick="addComp()">➕ Add</button></div>`}
+async function addComp(){const name=$('#cpName').value.trim();if(!name)return toast('Name required');
+ const r=await fetch(`/api/colleges/${cid}/competitors`,{method:'POST',headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({name,town:$('#cpTown').value,distance_km:$('#cpDist').value,annual_fee:$('#cpFee').value,
+   placements_pct:$('#cpPlc').value,closing_rank_note:$('#cpRank').value,their_strength:$('#cpTheir').value,
+   our_edge:$('#cpEdge').value,source_note:$('#cpSrc').value||'AICTE approvals / public disclosures'})});
+ if(r.ok){toast('Added to Comparison Pack');loadCompetitors()}else toast('Owner/Principal/Director/Management only')}
+async function delComp(id){const r=await fetch(`/api/colleges/${cid}/competitors/${id}`,{method:'DELETE'});if(r.ok)loadCompetitors()}
 function updCourse(i,k,v){window._ckpCourses[i][k]=isNaN(v)?v:+v||0}
 async function saveCkpProse(){await saveCkp(false)}
 async function saveCkp(reindex=true){if(!cid)return;$('#ckpOut').innerHTML='<span class="spinner"></span>';
@@ -305,6 +417,117 @@ async function loadWidget(){if(!cid)return;const code=`<!-- College Growth OS wi
   $('#embedCode').textContent=code;$('#widgetLink').href=`${ORIGIN}/widget/${cid}`;$('#widgetLink2').href=`${ORIGIN}/widget/${cid}`}
 function copyEmbed(){navigator.clipboard.writeText($('#embedCode').textContent);toast('Embed code copied')}
 
+const SEVC={red:'#DC2626',amber:'#D97706',teal:'#0D9488'};
+async function loadNBA(){if(!cid)return;try{const a=await api(`/api/colleges/${cid}/next-actions`);
+  $('#nba').innerHTML=a.map(x=>`<div style="display:flex;gap:9px;align-items:flex-start;margin:7px 0">
+   <span style="font-size:17px">${x.icon}</span><span style="flex:1;font-size:12.8px;color:#12332E">
+   <b style="color:${SEVC[x.sev]||'#12332E'}">${x.sev==='red'?'URGENT · ':''}</b>${esc(x.text)}</span>
+   <button class="btn ghost" style="padding:3px 10px;font-size:11.5px" onclick="goTab('${x.tab}')">Go →</button></div>`).join('');
+}catch(e){$('#nba').textContent='—'}}
+async function coachAsk(convId,btn){btn.textContent='…';
+ try{const r=await api(`/api/colleges/${cid}/coach`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({conversation_id:convId})});
+  const old=document.getElementById('coachOut');if(old)old.remove();
+  const card=document.createElement('div');card.id='coachOut';card.className='card';card.style.marginTop='10px';
+  card.innerHTML=`<h3>✨ Suggested reply <span class="tag info">${r.brain}</span> ${r.topic?('· '+esc(r.topic)):''}</h3><div style="font-size:13px;line-height:1.6">${esc(r.suggestion)}</div>`;
+  const host=btn.closest('.card');if(host&&host.parentNode)host.parentNode.insertBefore(card,host.nextSibling);else document.body.appendChild(card);
+  btn.textContent='✨ Reply idea';toast('Reply suggestion ready');
+ }catch(e){btn.textContent='✨ Reply idea';toast(esc(e.message))}}
+/* ── v0.5 premium ── */
+async function loadAnalytics(){if(!cid)return;try{const a=await api(`/api/colleges/${cid}/analytics`);
+ const pts=a.trend.map((t,i)=>`${20+i*(160/6)},${46-Math.min(38,t.n*10)}`).join(' ');
+ $('#anaRow').innerHTML=`
+  <div class="card" style="flex:1.4"><h3>Last 7 days — enquiries</h3>
+   <svg width="180" height="52" style="display:block"><polyline points="${pts}" fill="none" stroke="#0D9488" stroke-width="2.5"/>
+   ${a.trend.map((t,i)=>`<circle cx="${20+i*(160/6)}" cy="${46-Math.min(38,t.n*10)}" r="2.6" fill="#F59E0B"/>`).join('')}</svg>
+   <div class="muted" style="font-size:11px">${a.trend.map(t=>t.day[0]).join(' &nbsp; &nbsp;')}</div></div>
+  <div class="card"><h3>Conversion</h3><div class="big">${a.conversion_pct}%</div><span class="muted">leads → joined</span></div>
+  <div class="card"><h3>Cost per lead</h3><div class="big">${a.cpl?('₹'+a.cpl):'—'}</div><span class="muted">${a.spend?('spend ₹'+a.spend.toLocaleString('en-IN')):'set ad spend in Settings'}</span></div>
+  <div class="card"><h3>Cost per JOINED student</h3><div class="big" style="color:var(--ok)">${a.cpj?('₹'+a.cpj.toLocaleString('en-IN')):'—'}</div><span class="muted">vs ₹3.4L lifetime value of a seat</span></div>`;
+}catch(e){}}
+async function leadDrawer(id){try{const d=await api(`/api/leads/${id}/timeline`);
+ const us=await api('/api/staff-users').catch(()=>[]);
+ const L=d.lead;
+ const ov=document.createElement('div');ov.id='leadOv';
+ ov.style.cssText='position:fixed;inset:0;background:#0B1F1C66;z-index:60';
+ ov.onclick=e=>{if(e.target===ov)ov.remove()};
+ const tl=d.timeline.map(t=>`<div style="margin:7px 0;border-left:3px solid ${t.who==='parent'?'#0D9488':t.who==='ai'?'#134E4A':'#F59E0B'};padding:2px 0 2px 10px">
+   <div class="muted" style="font-size:10.5px">${t.at} · ${t.who}</div><div style="font-size:12.5px">${esc((t.text||'').slice(0,220))}</div></div>`).join('')||'<div class="muted">No activity yet.</div>';
+ ov.innerHTML=`<div style="position:absolute;right:0;top:0;bottom:0;width:min(460px,94vw);background:#fff;overflow-y:auto;padding:18px 20px;box-shadow:-8px 0 30px #0b1f1c22">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+   <b style="font-family:Poppins;color:var(--ink2);font-size:17px">${esc(L.name||'Parent '+L.id)}</b>
+   <button class="btn ghost" onclick="document.getElementById('leadOv').remove()">✕</button></div>
+  <div class="muted" style="font-size:12px;margin:2px 0 10px">${esc(L.phone)} · ${esc(L.town||'—')} · via ${esc(L.source)} · score <b>${L.score}</b></div>
+  <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+   <span class="tag info">${esc(L.stage)}</span><span class="tag ${L.consent?'ok':'warn'}">${L.consent?'consent ✓':'no consent'}</span>
+   ${L.branch?`<span class="tag info">${esc(L.branch)}</span>`:''}${L.rank?`<span class="tag info">${/^rank/i.test(L.rank)?'':'rank '}${esc(L.rank)}</span>`:''}</div>
+  <div style="margin-bottom:10px"><b style="font-size:12.5px">Assign to:</b>
+   <select id="asgSel" class="f" style="padding:6px 8px;border:1px solid var(--line);border-radius:8px;margin-left:6px">
+    <option value="">—</option>${us.map(u=>`<option value="${u.username}" ${L.assigned_to===u.id?'selected':''}>${esc(u.username)} (${esc(u.role)})</option>`).join('')}</select>
+   <button class="btn grn" style="padding:5px 12px;font-size:12px;margin-left:6px" onclick="assignLead(${L.id})">Assign</button></div>
+  <div style="margin-bottom:10px;padding:10px;background:var(--ivory);border:1px solid var(--line);border-radius:10px">
+   <b style="font-size:12.5px">💸 Referral & commission</b>
+   <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:6px">
+    <select id="refSel" class="f" style="padding:6px 8px;border:1px solid var(--line);border-radius:8px">
+     <option value="">— no referral —</option>${us.map(u=>`<option value="${esc(u.username)}" ${d.ref.username===u.username?'selected':''}>${esc(u.username)}</option>`).join('')}</select>
+    <input id="refAmt" class="f" type="number" min="0" step="500" placeholder="₹ per joined admission" value="${d.ref.amt||''}" style="width:170px;padding:6px 8px;border:1px solid var(--line);border-radius:8px">
+    <button class="btn grn" style="padding:5px 12px;font-size:12px" onclick="saveRef(${L.id})">Save</button>
+    ${d.ref.paid?'<span class="tag ok">paid ✓</span>':''}
+   </div>
+   <div class="muted" style="font-size:11px;margin-top:5px">Commission shows as DUE when this lead reaches <b>joined</b>. Settle in Reports → Referrals & commissions.</div>
+  </div>
+  <b style="font-size:13px;color:var(--ink2)">Full story</b>${tl}</div>`;
+ document.body.appendChild(ov);
+}catch(e){toast(esc(e.message))}}
+async function saveRef(id){const u=document.getElementById('refSel').value;
+ const amt=parseInt(document.getElementById('refAmt').value||'0',10)||0;
+ try{await api(`/api/leads/${id}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ref_username:u,commission_amt:amt})});
+  toast(u?('Referral: '+u+' · ₹'+amt+' on join'):'Referral cleared');loadLeads()}catch(e){toast(esc(e.message))}}
+async function importLeads(file){if(!file)return;const text=await file.text();
+ if(text.length>200000)return toast('File too large (200 KB max)');
+ try{const d=await api(`/api/colleges/${cid}/leads/import`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({csv:text})});
+  toast(`⬆ Imported ${d.imported}, skipped ${d.skipped} duplicate(s)`);loadLeads();loadOverview()}catch(e){toast('Import failed: '+esc(e.message))}}
+async function assignLead(id){const u=document.getElementById('asgSel').value;if(!u)return toast('Pick a staff member');
+ try{await api(`/api/leads/${id}/assign`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u})});toast('Assigned to '+u);loadLeads()}catch(e){toast(esc(e.message))}}
+let SPEND={};
+async function importCkp(file){if(!file)return;let pack;
+ try{pack=JSON.parse(await file.text())}catch(e){return toast('Not a valid JSON file')}
+ if(!confirm('Replace this college\'s Knowledge Pack tables (courses, hostels, buses, placements, dates) with this file?'))return;
+ try{const d=await api(`/api/colleges/${cid}/ckp/import`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({pack})});
+  toast('✅ Pack imported — '+d.courses+' course(s). Review in Knowledge tab.');loadCkp()}catch(e){toast('Import failed: '+esc(e.message))}}
+async function loadCommissions(){if(!cid)return;const w=$('#commWrap');try{
+ const d=await api(`/api/colleges/${cid}/commissions`);
+ if(!d.summaries.length){w.innerHTML='No referral leads yet — open a lead and set 💸 referral & commission.';return}
+ const head='<table><thead><tr><th>Staff</th><th>Refs</th><th>Joined</th><th>Due ₹</th><th>Paid ₹</th><th></th></tr></thead><tbody>';
+ const body=d.summaries.map(t=>`<tr><td><b>${esc(t.username)}</b></td><td>${t.refs}</td><td>${t.joined}</td><td>${t.due?'<b style=\'color:#B45309\'>₹'+t.due.toLocaleString('en-IN')+'</b>':'—'}</td><td>${t.paid?'₹'+t.paid.toLocaleString('en-IN'):'—'}</td><td>${t.due?`<button class="btn grn" style="padding:4px 10px;font-size:11.5px" onclick="markPaid('${esc(t.username)}')">Mark paid</button>`:''}</td></tr>`).join('');
+ w.innerHTML=head+body+'</tbody></table>'}catch(e){w.textContent='…'}}
+async function markPaid(u){if(!confirm('Mark all joined commissions of '+u+' as PAID?'))return;
+ try{const d=await api(`/api/colleges/${cid}/commissions/mark-paid`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u})});
+  toast('✅ Settled '+d.cleared+' payment(s) — logged in audit');loadCommissions()}catch(e){toast(esc(e.message))}}
+async function loadSettings(){if(!cid)return;try{
+ const st=await api(`/api/colleges/${cid}/settings`);SPEND=st.ad_spend||{};
+ $('#envStatus').innerHTML=`
+  <div>💬 WhatsApp sending: <span class="tag ${st.env.whatsapp_live?'ok':'warn'}">${st.env.whatsapp_live?'LIVE':'mock (log only)'}</span></div>
+  <div style="margin:6px 0">🧠 AI brain: <span class="tag ${st.env.llm_brain?'ok':'info'}">${st.env.llm_brain?'LLM connected':'offline playbook brain'}</span></div>
+  <div>🔐 Meta webhook signature: <span class="tag ${st.env.meta_signature?'ok':'warn'}">${st.env.meta_signature?'verified':'not set'}</span></div>
+  <div class="muted" style="font-size:11.5px;margin-top:8px">LIVE mode needs WHATSAPP_TOKEN + WHATSAPP_PHONE_ID env vars (set in Vercel) — ask Pooja Soft Solutions to switch it on.</div>`;
+ const SRC=['meta_ad','qr','website_chat','walk_in','missed_call','referral','newspaper','hoarding'];
+ $('#spendInputs').innerHTML=SRC.map(k=>`<input class="f" id="sp_${k}" placeholder="${k}" value="${SPEND[k]||''}" style="width:120px">`).join('');
+}catch(e){toast(esc(e.message))}}
+async function saveSpend(){const o={};document.querySelectorAll('[id^=sp_]').forEach(i=>{if(i.value)o[i.id.slice(3)]=i.value});
+ try{await api(`/api/colleges/${cid}/settings`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({ad_spend:o})});toast('Ad spend saved — ROI cards updated');loadAnalytics()}catch(e){toast(esc(e.message))}}
+async function copyDigest(){try{const d=await api(`/api/colleges/${cid}/digest`);
+ const txt=`📋 ${d.college} — weekly briefing\n\n`+d.headline.join("\n")+`\n\n— SeatSetu AI, powered by Pooja Soft Solutions`;
+ try{await navigator.clipboard.writeText(txt);toast('Digest copied — paste to principal ✅')}catch(e){}
+ const o=document.getElementById('digestOut');o.style.display='block';o.textContent=txt;
+}catch(e){toast(esc(e.message))}}
+async function viewDigest(){const o=document.getElementById('digestOut');
+ if(o.style.display==='block'){o.style.display='none';return}
+ const d=await api(`/api/colleges/${cid}/digest`);
+ o.style.display='block';o.textContent=d.headline.join("\n")}
+async function loadBell(){try{const a=await api(`/api/colleges/${cid}/next-actions`);
+ const red=a.filter(x=>x.sev==='red').length,badge=document.getElementById('bellBadge');
+ if(badge){badge.style.display=red?'inline-block':'none';badge.textContent=red}}
+ catch(e){}}
 async function loadReports(){if(!cid)return;
  try{const d=await api(`/api/colleges/${cid}/reports/management`);
   const a=d.admissions,c=d.careers,cp=d.compliance,ac=d.accred;
@@ -388,20 +611,36 @@ async function loadCareers(){if(!cid)return;const sm=await api(`/api/colleges/${
   $('#careerKpis').innerHTML=`<div class="card"><h3>Interviews</h3><div class="big">${sm.total}</div></div>
   <div class="card"><h3>Avg readiness</h3><div class="big" style="color:var(--acc)">${sm.avg?sm.avg+' /5':'—'}</div></div>`;
   $('#miTable').innerHTML=(sm.recent||[]).map(m=>`<tr><td>${esc(m.student)}<div class="muted">${esc(m.branch)} · ${esc(m.at)}</div></td><td style="color:${m.overall>=3.5?'var(--ok)':m.overall>=2.5?'var(--warn)':'var(--bad)'}"><b>${m.overall}</b>/5</td><td><button class="btn ghost" onclick="viewMI(${m.id})">Report</button></td></tr>`).join('')||'<tr><td class="muted">No interviews yet — start the first one.</td></tr>'}
+let MIVoice=true,MIPanel='friendly',MIANS={},MISC={};
+function speakMI(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-IN';
+  u.rate=.95;u.pitch=MIPanel==='strict'?.8:1.05;speechSynthesis.speak(u)}catch(e){}}
+function micMI(i){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return toast('Voice works in Chrome/Edge — or type');
+  const r=new SR();r.lang='en-IN';r.interimResults=false;
+  const b=document.getElementById('mimic'+i);b.textContent='🔴 listening…';
+  r.onresult=e=>{$('#mia'+i).value=e.results[0][0].transcript};
+  r.onend=()=>{b.textContent='🎙️'};r.onerror=r.onend;try{r.start()}catch(e){}}
 async function startInterview(){const name=$('#miName').value.trim();if(!name)return toast('Enter student name');
+  MIANS={};MISC={};MIPanel=$('#miStrict')&&$('#miStrict').checked?'strict':'friendly';
   const r=await api(`/api/colleges/${cid}/careers/start`,{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({student_name:name,roll:$('#miRoll').value,branch:$('#miBranch').value,role:$('#miRole').value})});
-  MI=r.id;MIQ=r.questions;renderMI(name)}
-function renderMI(name){$('#miFlow').innerHTML=MIQ.map((q,i)=>`
-  <div style="border:1px solid var(--line);border-radius:10px;padding:10px;margin:8px 0" id="miq${i}">
-  <div style="font-size:12.5px"><b>Q${i+1} · ${q.type}</b> — ${q.q}</div>
-  <textarea class="f" id="mia${i}" placeholder="Student's answer (Telugu-English ok)…" style="min-height:56px"></textarea>
-  <button class="btn" onclick="answerMI(${i})">Score answer</button>
-  <div id="mir${i}" class="muted" style="margin-top:6px"></div></div>`).join('')+
+    body:JSON.stringify({student_name:name,roll:$('#miRoll').value,branch:$('#miBranch').value,role:$('#miRole').value,strict:MIPanel==='strict'})});
+  MI=r.id;MIQ=r.questions;renderMI(name);
+  if(MIVoice&&MIQ[0])speakMI('Interview starts. '+MIQ[0].q)}
+function renderMI(name){$('#miFlow').innerHTML=`<div class="muted" style="margin-bottom:6px">🎬 A <b>${MIPanel==='strict'?'strict panel (score −0.5, probes push harder)':'friendly panel'}</b> is interviewing <b>${esc(name)}</b>. ${MIVoice?'Questions are spoken aloud — answer by 🎙️ voice or typing.':'Answer by typing; enable 🔊 for spoken questions.'}</div>`+
+ MIQ.map((q,i)=>`
+  <div style="border:1px solid ${q.type==='Probe'?'var(--amber)':'var(--line)'};border-radius:10px;padding:10px;margin:8px 0;background:${q.type==='Probe'?'#FFFBEB':''}" id="miq${i}">
+  <div style="font-size:13px;margin-bottom:6px"><b>${q.type==='Probe'?'🔄 Panel follow-up':'Q'+(i+1)+' · '+q.type}</b> — ${q.q}
+   <button class="btn ghost" style="padding:2px 8px;font-size:11px;margin-left:6px" onclick="speakMI(MIQ[${i}].q)">🔊</button></div>
+  <textarea class="f" id="mia${i}" placeholder="Student's answer (🎙️ speak or type — Telugu-English ok)…" style="min-height:56px">${esc(MIANS[i]||'')}</textarea>
+  <div style="display:flex;gap:6px;margin-top:6px"><button class="btn" onclick="answerMI(${i})">Score answer</button>
+  <button class="btn ghost" id="mimic${i}" style="padding:6px 10px" onclick="micMI(${i})" title="Answer by voice">🎙️</button></div>
+  <div id="mir${i}" class="muted" style="margin-top:6px">${MISC[i]?`<span class="tag ${MISC[i].score>=3.5?'ok':MISC[i].score>=2.5?'warn':'bad'}">${MISC[i].score}/5</span> <span>${MISC[i].tips}</span>`:''}</div></div>`).join('')+
   `<button class="btn grn" onclick="finishMI()">✅ Finish & save report</button>`}
-async function answerMI(i){const text=$('#mia'+i).value.trim();if(!text)return;
-  const r=await api(`/api/careers/${MI}/answer`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({no:i+1,text})});
-  $('#mir'+i).innerHTML=`<span class="tag ${r.score>=3.5?'ok':r.score>=2.5?'warn':'bad'}">${r.score}/5</span> <span class="muted">${r.tips}</span>`}
+async function answerMI(i){const text=$('#mia'+i).value.trim();if(!text)return;MIANS[i]=text;
+  const r=await api(`/api/careers/${MI}/answer`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({no:MIQ[i].no,text})});
+  MISC[i]={score:r.score,tips:r.tips};
+  $('#mir'+i).innerHTML=`<span class="tag ${r.score>=3.5?'ok':r.score>=2.5?'warn':'bad'}">${r.score}/5</span> <span class="muted">${r.tips}</span>`;
+  if(r.followup&&!MIQ.some(q=>String(q.no)===String(r.followup.no))){MIQ.splice(i+1,0,r.followup);
+    renderMI($('#miName').value.trim());if(MIVoice)speakMI(r.followup.q)}}
 async function finishMI(){const r=await api(`/api/careers/${MI}/finish`,{method:'POST'});
   toast('Report saved — overall '+r.overall+'/5');loadCareers();viewMI(MI)}
 async function viewMI(id){const d=await api(`/api/careers/${id}`);
@@ -409,6 +648,22 @@ async function viewMI(id){const d=await api(`/api/careers/${id}`);
   d.questions.forEach(q=>{h+=`<div style="margin:6px 0;font-size:12px"><b>Q${q.no} (${q.type})</b>: ${q.q}<div class="muted">Score ${q.score??'—'}/5 ${q.tips?'· '+q.tips:''}</div></div>`});
   $('#miFlow').innerHTML=`<div class="card">${h}</div>`}
 async function exportEvidence(){location.href=`/api/colleges/${cid}/careers/export`}
+async function loadPasses(){if(!cid)return;let rows=[];
+ try{rows=await api(`/api/colleges/${cid}/practice-passes`)}catch(e){$('#ppList').textContent='';return}
+ $('#ppList').innerHTML=(rows||[]).map(r=>`<div style="display:flex;gap:6px;align-items:center;border-top:1px solid var(--line);padding:5px 0;font-size:12.5px">
+  <b>${esc(r.student_name)}</b><span class="muted">${esc(r.branch)}${r.roll?' · '+esc(r.roll):''}</span>
+  <span class="tag" style="font-family:monospace;letter-spacing:1px">${esc(r.code)}</span>
+  <span style="flex:1"></span><span class="muted" style="font-size:10.5px">${r.last_used?('used '+r.last_used):'not used yet'}</span>
+  <button class="btn ghost" style="padding:2px 8px;font-size:11px" onclick="togglePass(${r.id})">${r.active?'🚫':'✅'}</button></div>`).join('')||'<div class="muted" style="font-size:12px">No passes yet — create the first code above.</div>'}
+async function createPass(){const name=$('#ppName').value.trim();if(!name)return toast('Student name required');
+ const r=await fetch(`/api/colleges/${cid}/practice-passes`,{method:'POST',headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({student_name:name,roll:$('#ppRoll').value,branch:$('#ppBranch').value})});
+ const d=await r.json();if(!r.ok)return toast('Staff role required');
+ const box=document.getElementById('ppCred');box.style.display='block';
+ box.innerHTML=`<div style="background:#F7FAF9;border:1px solid var(--line);border-radius:10px;padding:9px;font-size:13.5px">Code for <b>${esc(name)}</b>: <b style="font-family:monospace;letter-spacing:2px;font-size:16px">${esc(d.code)}</b><br>
+ <a class="btn" style="text-decoration:none;display:inline-block;margin-top:6px" target="_blank" href="https://wa.me/?text=${encodeURIComponent('Hi '+name+'! Your SeatSetu Practice Pass:%0A1) Open '+location.origin+'/practice%0A2) Enter code: '+d.code+'%0AUnlimited voice mock interviews — your reports go to the placement office. All the best! 🎯')}" style="padding:6px 12px">📱 Send on WhatsApp</a></div>`;
+ $('#ppName').value='';loadPasses()}
+async function togglePass(id){await fetch(`/api/colleges/${cid}/practice-passes/${id}`,{method:'PUT'});loadPasses()}
 
 function pbStep(n,title,color,body,btn,tab){return `<div class="card" style="margin-bottom:10px;border-left:5px solid ${color}">
   <div style="display:flex;align-items:center;gap:12px"><div style="min-width:34px;height:34px;border-radius:50%;background:${color};color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-family:var(--font-display)">${n}</div>
@@ -431,6 +686,103 @@ function renderPlaybook(){
     <b style="font-family:var(--font-display)">Support — Pooja Soft Solutions</b>
     <div style="margin-top:6px;font-size:13px">📞 92471 05525 · 💬 WhatsApp 75691 92211 · ✉️ info@poojasoftsolutions.com · <a href="https://poojasoftsolutions.com" target="_blank" style="color:#fff">poojasoftsolutions.com</a> · Ongole, Andhra Pradesh</div></div>`}
 
+const LANDING={admin:'overview',principal:'overview',director:'overview',manager:'leads',office:'tasks',counselor:'tasks',placement:'careers',iqac:'accred'};
+const ROLE_LINE={admin:'You control everything — staff logins, money, every module.',principal:'Your Monday digest is one tap away in Settings.',director:'All numbers, zero typing — start with the ₹ cards.',manager:'Run the pipeline: leads in → visits booked → seats joined.',office:'Your calls & follow-ups are waiting in To-Do.',counselor:'Call your top leads today — To-Do knows the order.',placement:'Mock interviews & NAAC evidence live in Careers.',iqac:'Accreditation clock is ticking — collect evidence weekly.'};
+const ROLE_SHORT={admin:'Owner · Admin Key',principal:'Principal',director:'Director',manager:'Management',office:'Admin Office',counselor:'Counselor',placement:'Placement Officer',iqac:'IQAC'};
+const ROLE_COLOR={admin:'#0F766E',principal:'#7C3AED',director:'#B45309',manager:'#0369A1',office:'#0D9488',counselor:'#64748B',placement:'#BE185D',iqac:'#4D7C0F'};
+const ROLE_PRESET_TABS={admin:['overview','leads','chats','tasks','followups','reports','settings','staff','help','ckp','widget','playbook','accred','careers','comply'],principal:['overview','leads','chats','tasks','followups','reports','settings','help','ckp','widget','playbook','accred','careers','comply'],director:['overview','reports','settings','accred','careers','comply','playbook','help'],manager:['overview','leads','chats','tasks','followups','reports','settings','widget','careers','help'],office:['overview','leads','chats','tasks','followups','widget','ckp','accred','careers','comply','help'],counselor:['overview','leads','chats','tasks','followups','playbook','help'],placement:['overview','reports','careers','playbook','help'],iqac:['overview','reports','accred','ckp','playbook','help']};
+const TABS_DEF=[['overview','📊 Overview'],['leads','👥 Leads'],['chats','💬 AI Chats'],['tasks','📞 To-Do'],['followups','⏰ Follow-ups'],['reports','📊 Reports'],['settings','⚙️ Settings'],['staff','👤 Staff'],['widget','🟢 Widget'],['playbook','🧭 Playbook'],['accred','🎯 Accred'],['careers','💼 Careers'],['comply','🛡️ Compliance'],['ckp','📚 Knowledge']];
+function landByRole(){try{if(!ME)return;const v=LANDING[ME.role]||'overview';const b=document.querySelector('#nav button[data-v="'+v+'"]');if(b)b.click();
+  const w=document.getElementById('welcome');
+  if(w&&ROLE_LINE[ME.role]){w.style.display='block';w.innerHTML='👋 <b>'+esc(ME.name||ME.username)+'</b> · '+ROLE_LINE[ME.role]}
+  if(ME.must_change)setTimeout(()=>alert('Welcome! First, change your password: open ❓ Help → "Change my password".'),900)}catch(e){}}
+let STAFF_CACHE=[];
+async function loadStaff(){if(!ME||ME.role!=='admin')return;
+ let us=[],cols=[];try{us=await api('/api/staff-users');cols=await api('/api/colleges')}catch(e){$('#staffWrap').innerHTML='<div class="muted">Owner access only.</div>';return}
+ STAFF_CACHE=us;const cn={};cols.forEach(c=>cn[c.id]=c.short||c.name);
+ const tabsLine=u=>{const t=u.tabs||ROLE_PRESET_TABS[u.role]||[];return (u.tabs?'<span class="tag" style="background:#ECFDF5;color:#0F766E">custom</span> ':'<span class="tag">role preset</span> ')+t.length+' tabs'};
+ const rowHtml=us.map(u=>{const role=u.role||'counselor';
+  return `<tr>
+   <td><b>${esc(u.name||u.username)}</b><br><span style="font-size:11px;color:var(--mut)">@${esc(u.username)}${u.phone?' · 📱 '+esc(u.phone):''}</span></td>
+   <td><span class="tag" style="background:${ROLE_COLOR[role]||'#64748B'};color:#fff">${ROLE_SHORT[role]||role}</span></td>
+   <td style="font-size:12px">${cn[u.college_id]||'—'}</td>
+   <td style="font-size:12px">${tabsLine(u)}<br><span style="font-size:10.5px;color:var(--mut)">${u.last_login?('last login '+u.last_login):'⚠️ never logged in'}</span></td>
+   <td style="white-space:nowrap">
+    <button class="btn ghost" style="padding:4px 8px;font-size:12px" onclick="allocUI(${u.id})">🎚️ Allocate</button>
+    <button class="btn ghost" style="padding:4px 8px;font-size:12px" onclick="resetPw(${u.id})">🔑 Reset password</button>
+    <button class="btn ghost" style="padding:4px 8px;font-size:12px" onclick="toggleStaff(${u.id})">${u.active?'🚫 Deactivate':'✅ Activate'}</button>
+   </td></tr>`}).join('');
+ const cards=Object.keys(ROLE_SHORT).map(r=>`<div class="card" style="flex:1;min-width:200px;border-top:4px solid ${ROLE_COLOR[r]}"><b style="font-size:13px">${ROLE_SHORT[r]}</b><div style="font-size:11.5px;color:var(--mut);margin-top:3px">${{admin:'Controls everything — creates staff logins',principal:'Full view + Monday digest; no staff admin',director:'Sees every number & ₹ ROI; enters nothing',manager:'Pipeline + ad spend + widget',office:'Daily work: leads, calls, visits, consent',counselor:'Own leads, chats, to-do only',placement:'Careers, mocks, NAAC evidence',iqac:'Accreditation & marks'}[r]}</div></div>`).join('');
+ $('#staffWrap').innerHTML=`
+  <div class="row" style="flex-wrap:wrap">${cards}</div>
+  <div class="card" style="margin-top:12px"><h3>➕ Add a staff member</h3>
+   <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end">
+    <div><div class="muted" style="font-size:11.5px">Full name</div><input id="nsName" placeholder="e.g. Lakshmi" style="padding:8px;border:1px solid var(--line);border-radius:8px"></div>
+    <div><div class="muted" style="font-size:11.5px">Username</div><input id="nsUser" placeholder="auto from name" style="padding:8px;border:1px solid var(--line);border-radius:8px"></div>
+    <div><div class="muted" style="font-size:11.5px">Mobile</div><input id="nsPhone" placeholder="10-digit" style="padding:8px;border:1px solid var(--line);border-radius:8px;width:130px"></div>
+    <div><div class="muted" style="font-size:11.5px">Role</div><select id="nsRole" onchange="nsPreset()" style="padding:8px;border:1px solid var(--line);border-radius:8px">${Object.keys(ROLE_SHORT).filter(r=>r!=='admin').map(r=>`<option value="${r}">${ROLE_SHORT[r]}</option>`).join('')}</select></div>
+    <div><div class="muted" style="font-size:11.5px">College</div><select id="nsCollege" style="padding:8px;border:1px solid var(--line);border-radius:8px">${cols.map(c=>`<option value="${c.id}">${esc(c.short||c.name)}</option>`).join('')}</select></div>
+    <div><div class="muted" style="font-size:11.5px">Temp password</div><input id="nsPw" style="padding:8px;border:1px solid var(--line);border-radius:8px;width:150px"></div>
+    <button class="btn" onclick="addStaff()">Create login</button>
+   </div>
+   <div class="muted" style="font-size:11.5px;margin-top:7px">They see the role's screens by default — press <b>🎚️ Allocate</b> any time to change exactly what this person sees. మీరు నిర్ణయించండి.</div>
+  </div>
+  <div id="allocBox" style="display:none" class="card"><h3>🎚️ What can <span id="allocName"></span> see?</h3>
+   <div id="allocChecks" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+   <div style="margin-top:10px;display:flex;gap:8px"><button class="btn" onclick="saveAlloc()">Save access</button><button class="btn ghost" onclick="allocPreset()">Use role default</button><button class="btn ghost" onclick="document.getElementById('allocBox').style.display='none'">Cancel</button></div>
+  </div>
+  <div id="credBox" style="display:none" class="card" style="margin-top:12px"></div>
+  <div class="card" style="margin-top:12px"><h3>👤 Team (${us.filter(u=>u.active).length} active)</h3>
+   <table><thead><tr><th>Person</th><th>Role</th><th>College</th><th>Access</th><th>Actions</th></tr></thead><tbody>${rowHtml}</tbody></table>
+  </div>`;
+ nsPreset()}
+function nsPreset(){const r=document.getElementById('nsRole');if(!r)return;const n=document.getElementById('nsName'),u=document.getElementById('nsUser'),p=document.getElementById('nsPw');
+ if(n&&!u.dataset.touched)u.value=n.value.toLowerCase().replace(/[^a-z]/g,'').slice(0,10)||'staff'+Math.floor(Math.random()*90+10);
+ if(!p.value)p.value=(u.value||'staff').replace(/[^a-z]/g,'').slice(0,4)+'-'+Math.floor(Math.random()*9000+1000)}
+async function addStaff(){const name=document.getElementById('nsName').value.trim(),username=document.getElementById('nsUser').value.trim(),phone=document.getElementById('nsPhone').value.trim(),role=document.getElementById('nsRole').value,college_id=+document.getElementById('nsCollege').value,password=document.getElementById('nsPw').value.trim();
+ if(!name||!username||password.length<8)return alert('Need name, username and a password of 8+ characters.');
+ const st=await fetch('/api/staff-users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,username,phone,role,college_id,password,tabs:null})});
+ const d=await st.json();if(!st.ok)return alert('Could not create: '+(d.detail||st.status));
+ showCred('✅ Login created for <b>'+esc(name)+'</b>',username,password);loadStaff()}
+function showCred(title,u,p){const box=document.getElementById('credBox');box.style.display='block';
+ box.innerHTML='<h3>'+title+'</h3><div style="font-size:14px;background:#F7FAF9;border:1px solid var(--line);border-radius:10px;padding:10px;margin:8px 0">Username: <b>'+esc(u)+'</b> · Password: <b>'+esc(p)+'</b><br><span style="font-size:12px;color:var(--mut)">Shown once — share on WhatsApp, ask them to login and change it.</span></div><a class="btn" style="text-decoration:none" target="_blank" href="https://wa.me/?text='+encodeURIComponent('SeatSetu login for '+u+'%0AWebsite: '+location.origin+'/login%0AUsername: '+u+'%0APassword: '+p+'%0A(Open Help → Change my password after first login)%0A— Pooja Soft Solutions, 92471 05525')+'">💬 Send on WhatsApp</a>'}
+let allocId=null;
+function allocUI(id){const u=STAFF_CACHE.find(x=>x.id===id);if(!u)return;allocId=id;
+ const cur=u.tabs||ROLE_PRESET_TABS[u.role]||[];
+ document.getElementById('allocName').textContent=(u.name||u.username)+' ('+ROLE_SHORT[u.role]+')';
+ document.getElementById('allocChecks').innerHTML=TABS_DEF.map(([v,l])=>`<label style="border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-size:12.5px;cursor:pointer;${cur.includes(v)?'background:#ECFDF5;border-color:#0D9488':''}"><input type="checkbox" value="${v}" ${cur.includes(v)?'checked':''} onchange="this.parentElement.style.background=this.checked?'#ECFDF5':''"> ${l}</label>`).join('');
+ document.getElementById('allocBox').style.display='block';document.getElementById('allocBox').scrollIntoView({behavior:'smooth',block:'center'})}
+function allocPreset(){const u=STAFF_CACHE.find(x=>x.id===allocId);document.querySelectorAll('#allocChecks input').forEach(i=>{i.checked=(ROLE_PRESET_TABS[u.role]||[]).includes(i.value);i.parentElement.style.background=i.checked?'#ECFDF5':''})}
+async function saveAlloc(){const tabs=[...document.querySelectorAll('#allocChecks input:checked')].map(i=>i.value);
+ const st=await fetch('/api/staff-users/'+allocId,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({tabs})});
+ if(st.ok){document.getElementById('allocBox').style.display='none';loadStaff()}else alert('Save failed — owner access only.')}
+async function toggleStaff(id){const u=STAFF_CACHE.find(x=>x.id===id);
+ const st=await fetch('/api/staff-users/'+id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({active:!u.active})});
+ st.ok?loadStaff():alert('Failed — owner only.')}
+async function resetPw(id){const u=STAFF_CACHE.find(x=>x.id===id);const p=(u.username||'staff').replace(/[^a-z]/g,'').slice(0,4)+'-'+Math.floor(Math.random()*9000+1000);
+ const st=await fetch('/api/staff-users/'+id+'/password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:p})});
+ if(st.ok){showCred('🔑 New password for <b>'+esc(u.name||u.username)+'</b>',u.username,p);loadStaff()}else alert('Failed — owner only.')}
+const HELP_STEPS={admin:['Overview — check ₹ cost-per-joined vs ₹3.4L seat value','Staff & Roles — create a login per person, allocate their screens','Settings — Monday: copy the digest to the principal\'s WhatsApp'],principal:['Overview — read "What to do today" (1 minute)','Settings — Copy WhatsApp digest → paste to your groups','Monthly: Accred readiness % + evidence pending'],director:['Overview — ₹ cards: CPL, cost-per-joined, conversion','Reports — funnel by source; move budget to cheapest joins','Accred — readiness % before the Dec 31 AQAR clock'],manager:['Leads — new enquiries: advance stages, book visits','Settings — update ad spend so ₹ numbers stay true','Widget — check the AI is answering with your facts'],office:['Counselor To-Do — call from the top, mark done','Follow-ups — press Run scheduler (day-2/7/12 nudges)','Leads — tick consent before any WhatsApp'],counselor:['To-Do — your call list, in order','Chats — open Reply Coach before hard questions','Leads — click a parent: full story before you call'],placement:['Careers — run mock interviews per student','Check readiness scores → coach the weak ones','Export NAAC evidence CSV → Accred vault'],iqac:['Accred — create course registrations first','Upload each course marks Excel (sample CSV provided)','Evidence vault — collect weekly, mark done']};
+function loadHelp(){const steps=HELP_STEPS[ME&&ME.role]||HELP_STEPS.office;
+ const gloss=[['Lead','One parent/student enquiry — however it came (ad, QR, call, chat).'],['Stage','Where the enquiry is: new → interested → visit → joined.'],['Consent (DPDP)','Parent said "yes, you may contact me" — the law requires it before WhatsApp.'],['Follow-up nudge','Automatic polite reminder on day 2, 7, 12 — no lead goes cold.'],['CPL / CPJ','Cost per lead / cost per JOINED student — your money truth.'],['AQAR','Annual accreditation report — due Dec 31; SeatSetu counts down for you.'],['Knowledge Pack','The only facts the AI is allowed to say — you control it.'],['Kill switch','One button (Compliance tab) to pause all AI replies instantly.']];
+ $('#helpWrap').innerHTML=`
+  <div class="card" style="border-left:5px solid var(--acc)"><h3>What is SeatSetu?</h3>
+   <div style="font-size:13.5px">One place for your college's admissions, accreditation and placements. Parents chat with your AI counselor in Telugu or English; your team sees every lead, every rupee and every pending task. <span style="color:var(--mut)">తల్లిదండ్రుల ప్రశ్నలకు AI సమాధానం — మీ జట్టుకు పూర్తి నియంత్రణ.</span></div></div>
+  <div class="card" style="margin-top:12px"><h3>Your day in 3 steps (${ROLE_SHORT[ME&&ME.role]||'Staff'})</h3>
+   ${steps.map((t,i)=>`<div style="display:flex;gap:10px;margin:8px 0"><span style="min-width:26px;height:26px;border-radius:50%;background:#0D9488;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:700">${i+1}</span><span style="font-size:13.5px;padding-top:3px">${t}</span></div>`).join('')}</div>
+  <div class="row" style="margin-top:12px;flex-wrap:wrap">
+   <div class="card" style="flex:1.4"><h3>Words you will see</h3>${gloss.map(([w,d])=>`<div style="margin:6px 0;font-size:13px"><b style="color:#0F766E">${w}</b> — ${d}</div>`).join('')}</div>
+   <div style="flex:1;display:flex;flex-direction:column;gap:12px">
+    <div class="card"><h3>🔑 Change my password</h3>
+     <input id="npw1" type="password" placeholder="New password (8+ letters)" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:8px;margin-bottom:6px">
+     <button class="btn" onclick="changeMyPw()">Save new password</button><div id="npwMsg" class="muted" style="font-size:12px;margin-top:6px"></div></div>
+    <div class="card"><h3>Stuck? Call us</h3><div style="font-size:13px">Pooja Soft Solutions<br>📞 92471 05525 · 💬 <a href="https://wa.me/917569192211" target="_blank">WhatsApp 75691 92211</a><br><span style="color:var(--mut);font-size:12px">Forgot your password? Only your Owner (Admin Key) can reset it — Staff & Roles → Reset password.</span></div></div>
+   </div></div>`}
+async function changeMyPw(){const p=document.getElementById('npw1').value;
+ if(!p||p.length<8){document.getElementById('npwMsg').textContent='At least 8 letters, please.';return}
+ const st=await fetch('/api/staff-users/'+ME.id+'/password',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:p})});
+ document.getElementById('npwMsg').textContent=st.ok?'✅ Changed — use it from next login.':'❌ Could not change (owner? wrong length?)';if(st.ok)ME.must_change=false}
+
 let ME=null;
 async function boot(){try{ME=await api('/api/me');
   const chip=document.createElement('span');chip.className='tag info';chip.style.marginLeft='8px';
@@ -440,7 +792,9 @@ async function boot(){try{ME=await api('/api/me');
   if(ME.college_id){const sel=$('#collegeSel');sel.value=ME.college_id;sel.disabled=true;
     if(cid!==ME.college_id){cid=ME.college_id;}}
 }catch(e){/* master admin: no restrictions */}
-await loadColleges();if(ME&&ME.college_id){cid=ME.college_id;refreshAll()}}
+await loadColleges();if(ME&&ME.college_id){cid=ME.college_id;refreshAll()}
+  landByRole();
+  loadBell()}
 (async function(){await boot()})();
 </script>
 </body>

@@ -478,6 +478,99 @@ def make_task(db, col, lead, kind, note):
 
 
 # ── main entry ───────────────────────────────────────────────────────────────
+def _seats_pack(db, col, text) -> bool:
+    """Seat AVAILABILITY questions. Rank-word messages belong to the rank advisor,
+    so 'rank is 45000 — can I get a seat?' never lands here."""
+    import re as _re
+    t = " " + _re.sub(r"[^a-z0-9 ]", " ", (text or "").lower()) + " "
+    if " rank " in t or "ranku" in t or "ర్యాంక్" in text:
+        return False
+    return any(w in t for w in ("seat", "seats", "సీట్", "kottha seat", "khaali seat"))
+
+
+def _seats_reply(db, col, lang):
+    """Honest seat-status answer: intake (approved) + joined-so-far (our own pipeline)
+    + counselling reality + visit CTA. NEVER promises a seat."""
+    from .db import Course, Lead
+    courses = db.query(Course).filter_by(college_id=col.id).all()
+    joined = (db.query(Lead).filter(Lead.college_id == col.id, Lead.stage == "joined").count())
+    lines = []
+    if courses:
+        lines.append("Seat structure (approved intake, 2026-27):")
+        lines += [f"• {c.name.split('—')[0].strip()} ({c.code}): intake {c.intake}/yr" for c in courses]
+    lines.append(f"This season {joined} student(s) have already joined us — the rest fill through "
+                 "EAPCET counselling (rank-based) and the management quota (token at the college office).")
+    lines.append("Honest truth: seats move every day in counselling season — nobody outside the "
+                 "admission office can promise you one. What I CAN do: book your campus visit now, "
+                 "and our admission officer will confirm live status on the spot + guide the token process.")
+    if lang == "te":
+        lines.append("సీట్లు రోజూ మారుతూ ఉంటాయి — ప్రమోసం చేయను. వచ్చి క్యాంపస్ చూడండి, లైవ్ స్టేటస్ చెబుతారు.")
+    guardrails.log(col.id, "ai", "seats.answered", {"joined": joined}, db)
+    return "\n".join(lines), [{"title": "Approved intake table (CKP: courses)"}]
+
+
+def _comparison_pack(db, col, text) -> bool:
+    """Parent comparing colleges? (named a competitor OR generic compare words)"""
+    import re as _re
+    from .db import Competitor as _C
+    t = " " + _re.sub(r"[^a-z0-9 ]", " ", (text or "").lower()) + " "
+    for r in db.query(_C).filter_by(college_id=col.id).all():
+        if r.name and (" " + r.name.lower() + " ") in t:
+            return True
+    return any(w in t for w in (" vs ", "vs ", "compare", "comparison", "better college",
+                                "which college", "which is best", "best college",
+                                "difference between", "పోల్చ", "మంచి కాలేజీ", "ఏ కాలేజీ"))
+
+
+def _comparison_reply(db, col, text, lang):
+    """Honest comparison: public numbers from the Owner-curated pack, never invented,
+    credit where due, then pivot to a campus visit. If not in pack → honest refusal."""
+    import re as _re
+    from .db import Competitor as _C, PlacementStat as _P, Course as _Co
+    t = " " + _re.sub(r"[^a-z0-9 ]", " ", (text or "").lower()) + " "
+    rows = db.query(_C).filter_by(college_id=col.id).all()
+    hits = [r for r in rows if r.name and (" " + r.name.lower() + " ") in t]
+    our = col.short or col.name
+    ps = db.query(_P).filter_by(college_id=col.id).all()
+    our_plc = ""
+    if ps:
+        placed = [p.placed_pct or 0 for p in ps]
+        top = max((p.top_lpa or 0) for p in ps)
+        avg = max((p.avg_lpa or 0) for p in ps)
+        our_plc = (f"placements ~{round(sum(placed) / len(placed))}% avg across branches, "
+                   f"packages up to ₹{top} LPA (avg {avg} LPA)")
+    fees = [c.convener_fee for c in db.query(_Co).filter_by(college_id=col.id).all() if c.convener_fee]
+    our_fee = f"convener-quota fee from ₹{min(fees):,}/yr" if fees else \
+        "transparent EAPCET-counselling fees (no donations)"
+    if hits:
+        m = hits[0]
+        lines = [f"Honest comparison — public numbers only ({m.source_note}):",
+                 f"• {m.name}" + (f" ({m.town}, {m.distance_km} km away)" if (m.town or m.distance_km) else "")
+                 + f": fee {m.annual_fee or '—'}/yr · placements {m.placements_pct or '—'}"
+                 + (f" · {m.closing_rank_note}" if m.closing_rank_note else ""),
+                 f"• {our}: {our_plc or 'verified placement record in our brochure'} · {our_fee}."]
+        if m.their_strength:
+            lines.append(f"Credit where due — {m.name} is known for: {m.their_strength}.")
+        if m.our_edge:
+            lines.append(f"Families choose {our} for: {m.our_edge}.")
+        lines.append("Rank maths and fee maths depend on YOUR EAMCET rank and budget — "
+                     "the real test is a campus visit: hostels, labs, food, you verify everything yourself. "
+                     "Shall I book a free visit? Or share your rank + town and I'll tell you honestly where you stand.")
+        if lang == "te":
+            lines.append("మీ ర్యాంక్ చెబితే నిజాయితీగా చెబుతాను — ఒకసారి క్యాంపస్ చూడండి, తర్వాత నిర్ణయం.")
+        guardrails.log(col.id, "ai", "comparison.answered", {"about": m.name}, db)
+        return "\n".join(lines), [{"title": f"Comparison Pack — {m.name} ({m.source_note})"}]
+    lines = [f"I keep only verified, approved numbers for {our} — I will not guess another college's "
+             "fees or placements, because wrong information can spoil a family's decision.",
+             "For other colleges please rely on official sources (AICTE approvals list, your EAPCET rank card).",
+             f"What I CAN say with proof about {our}: {our_plc or 'a verified placement record'} · {our_fee}.",
+             "Seeing is believing — shall I book a free campus visit for you and your parents?"]
+    if lang == "te":
+        lines.append("వేరే కాలేజీ గురించి తప్పు సమాచారం చెప్పను — మా కాలేజీ గురించి మాత్రమే ధృవీకరించిన సమాచారం చెబుతాను.")
+    guardrails.log(col.id, "ai", "comparison.honest_refusal", {}, db)
+    return "\n".join(lines), [{"title": "Honest-answer policy — approved data only"}]
+
+
 def handle_parent_message(db, college_id: int, text: str, channel: str = "web",
                           conversation_id: int | None = None,
                           consent_given: bool = False) -> dict:
@@ -510,6 +603,16 @@ def handle_parent_message(db, college_id: int, text: str, channel: str = "web",
     elif guardrails.is_human_request(text):
         reply, escalated = _handoff_reply(lang, col), True
         make_task(db, col, lead, "call", "Parent asked for a human counselor: " + text[:100])
+
+    # 2a. seat availability → approved intake + honesty + visit CTA (never promises)
+    elif _seats_pack(db, col, text):
+        reply, citations = _seats_reply(db, col, lang)
+        topic = "seats"
+
+    # 2b. college comparison → honest, sourced, visit-pivoting answer (never invent)
+    elif _comparison_pack(db, col, text):
+        reply, citations = _comparison_reply(db, col, text, lang)
+        topic = "comparison"
 
     # 3. trap classes → honest refusal (never invent)
     else:

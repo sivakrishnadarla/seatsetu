@@ -1,0 +1,14 @@
+{
+  "name": "SeatSetu — Admissions Command Center",
+  "short_name": "SeatSetu",
+  "description": "Every seat. Filled. AI admissions + accreditation suite by Pooja Soft Solutions.",
+  "start_url": "/widget/1",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#F7FAF9",
+  "theme_color": "#0F766E",
+  "icons": [
+    { "src": "/static/favicon-32.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/static/apple-touch-icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

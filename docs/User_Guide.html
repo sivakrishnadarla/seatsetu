@@ -53,7 +53,7 @@
   <h1>User Guide — Full Working Flow</h1>
   <p>SeatSetu is the AI back office for engineering &amp; degree colleges: an AI admissions counselor
   (Telugu + English), the NAAC/AQAR autopilot, and the placement copilot — one OS, three revenue problems solved.</p>
-  <div class="meta">Version 0.3 · September 2026 · A product by <b>Pooja Soft Solutions</b> ·
+  <div class="meta">Version 0.6 · September 2026 · A product by <b>Pooja Soft Solutions</b> ·
   <a href="https://poojasoftsolutions.com">poojasoftsolutions.com</a> · 📞 +91 92471 05525 · 💬 WhatsApp +91 75691 92211 · Ongole, Andhra Pradesh</div>
 </div>
 
@@ -67,6 +67,8 @@
   <a href="#s6">6 · SeatSetu Accred — AQAR before Dec 31</a>
   <a href="#s7">7 · SeatSetu Careers — placements with proof</a>
   <a href="#s8">8 · Safety, consent &amp; the kill switch</a>
+  <a href="#s17">8a · Staff &amp; Roles — one login per person (v0.6)</a>
+  <a href="#s18">8b · Premium console &amp; parent widget (v0.5)</a>
   <a href="#s9">9 · Deploy your own copy (GitHub + Vercel, ₹0)</a>
   <a href="#s10">10 · Troubleshooting &amp; FAQ</a>
 </div>
@@ -164,17 +166,52 @@ MAX,,20,20,15,15,15                                     ← optional explicit MA
 </ul>
 
 
+<h2 id="s17"><span class="no">8a</span>Staff &amp; Roles — one login per person <span class="badge">v0.6</span></h2>
+<p>One shared password was the bottleneck. Now <b>every person gets their own login</b>, and the Owner
+(the Admin-Key holder) decides exactly what each one sees — per person, per screen.</p>
+<div class="step"><b class="n">1</b><b>Two ways in.</b> Staff type <b>username + password</b>. The Owner leaves the username
+<b>empty</b> and types the Admin Key as the password. The login page explains both paths in plain English + Telugu.</div>
+<div class="step"><b class="n">2</b><b>Create a login (Owner only):</b> 👤 <b>Staff &amp; Roles</b> → ➕ Add a staff member →
+name, mobile, role, college → <b>Create login</b>. A temp password is generated and shown <b>once</b> — press
+<b>💬 Send on WhatsApp</b> to hand it over. (8 ready roles: Principal, Director, Management, Admin Office, Counselor, Placement, IQAC.)</div>
+<div class="step"><b class="n">3</b><b>🎚️ Allocate — the heart of it.</b> Press <b>Allocate</b> on any person → tick the exact
+screens they should see → <b>Save access</b>. It applies on their very next click. <b>Use role default</b> restores the preset.
+Nobody can see what you did not give them — verified by API-level 403 tests.</div>
+<div class="step amber"><b class="n">!</b><b>Housekeeping.</b> The console shows <b>last login</b> per person ("never logged in" = call them).
+<b>🚫 Deactivate</b> locks a person out instantly (staff who left). <b>🔑 Reset password</b> issues a new one-time password.
+Changing roles later takes one click. Password changes by the Owner only — staff change their own inside ❓ Help.</div>
+<div class="ok">✅ <b>Each role lands where they work:</b> Counselor/Admin Office open straight into 📞 To-Do, Placement opens 💼 Careers,
+IQAC opens 🎯 Accred, Director opens the ₹ overview. And every role gets a <b>❓ Help tab</b> written for them —
+"What is SeatSetu", your-day-in-3-steps, a glossary (Lead, Consent, CPL/CPJ, AQAR…) and self-service password change, in plain words + Telugu.</div>
+
+<h2 id="s18"><span class="no">8b</span>Premium console &amp; parent widget <span class="badge a">v0.5</span></h2>
+<table>
+<tr><th>Feature</th><th>Where</th><th>What it does</th></tr>
+<tr><td><b>🎯 Lead-360° drawer</b></td><td>Leads → click any lead</td><td>Full story: every parent message, AI reply, follow-up and task on one color-coded timeline + <b>assign to counselor</b>.</td></tr>
+<tr><td><b>💰 ₹ ROI analytics</b></td><td>Overview</td><td>Cost-per-lead, <b>cost-per-JOINED-student vs ₹3.4L seat value</b>, 7-day trend, conversion %. Enter ad spend in ⚙️ Settings to power it.</td></tr>
+<tr><td><b>📮 Monday digest</b></td><td>⚙️ Settings</td><td>One tap <b>Copy WhatsApp digest</b> → paste into the principal's WhatsApp. Plain language, last 7 days.</td></tr>
+<tr><td><b>📦 One-click backup</b></td><td>⚙️ Settings</td><td>ZIP of leads / careers / conversations CSVs + Knowledge Pack JSON. "Your data, yours."</td></tr>
+<tr><td><b>🎤 Voice input</b></td><td>Widget</td><td>Parents <b>speak in Telugu</b> (te-IN, Chrome/Edge) — the AI answers as usual.</td></tr>
+<tr><td><b>👍👎 Ratings</b></td><td>Widget</td><td>Parents rate every 4th AI answer — your quality loop.</td></tr>
+<tr><td><b>📲 PWA install</b></td><td>Widget</td><td>"Install SeatSetu" chip on the parent's phone — your college as an app icon.</td></tr>
+<tr><td><b>🛡️ Rate limiting</b></td><td>API</td><td>40 messages/60s per IP → blocked. No scraping, no flooding.</td></tr>
+</table>
+<div class="tip">💡 Settings (money, digest, backup) opens for Owner, Principal, <b>Director and Management</b> — but never for
+counselors/office/placement/iqac. Staff admin (creating logins) is <b>Owner-only</b>.</div>
+
 <h2 id="s15"><span class="no">R</span>Who does what — role guide (staff logins)</h2>
-<p>Every college gets 4 staff logins the day it is onboarded. <b>The principal does NOT run this daily</b> — staff do; the principal only reads the Monday report and approves. Log in at <code>/login</code> (username + password; leaving username empty logs in the master admin).</p>
+<p>Every college gets <b>7 ready-made logins</b> the day it is onboarded (plus the Owner's Admin Key). <b>The principal does NOT run this daily</b> — staff do; the principal reads the Monday digest and approves. Log in at <code>/login</code>. The Owner manages everyone in 👤 <b>Staff &amp; Roles</b> (section 8a) — see only what your role gives you.</p>
 <table>
 <tr><th>Role</th><th>Default login</th><th>Sees</th><th>Daily / weekly routine</th></tr>
-<tr><td><b>Principal</b></td><td><code>principal / principal123</code></td><td>Everything</td><td><b>5 min every Monday:</b> open 📊 Reports → Management One-Pager → print/PDF. Change default password on day 1 (Reports ▸ Staff &amp; Access ▸ Change my password).</td></tr>
+<tr><td><b>Principal</b></td><td><code>principal / principal123</code></td><td>Everything except staff admin</td><td><b>5 min every Monday:</b> ⚙️ Settings → <b>Copy WhatsApp digest</b> → paste to your groups. Change your password in ❓ Help on day 1.</td></tr>
 <tr><td><b>Counselor</b> (front desk)</td><td><code>counselor / counselor123</code></td><td>Leads, Chats, To-Do, Follow-ups, Reports</td><td><b>Morning (5 min):</b> 📞 To-Do tab → work top-down: hot leads, handoffs, traps. Afternoon: ⏰ Follow-ups → clear everything marked DUE. That's the whole job.</td></tr>
 <tr><td><b>Placement Officer</b></td><td><code>placement / placement123</code></td><td>Careers, Reports</td><td><b>Weekly:</b> 💼 Careers → start mock interviews for a batch → check avg score per branch → coach everyone listed "below 2.5" → re-test. Export NAAC evidence at season end.</td></tr>
 <tr><td><b>IQAC Coordinator</b></td><td><code>iqac / iqac123</code></td><td>Accred, Reports</td><td><b>Sept–Nov (AQAR season):</b> 🎯 Accred → upload semester marks CSV/Excel per course → run attainment → read gap analysis → collect evidence items marked pending → watch readiness % climb to 100 before Dec 31.</td></tr>
-<tr><td><b>Director / Correspondent</b></td><td><code>principal</code> login (or master admin)</td><td>Reports first</td><td><b>Whenever:</b> 📊 Reports → Management One-Pager shows leads → joined conversion, ad-source ROI, placement readiness, AQAR status, compliance — one printable page.</td></tr>
+<tr><td><b>Director / Correspondent</b></td><td><code>director / director123</code></td><td>Overview, Reports, Settings (₹), Accred, Careers, Compliance</td><td><b>Whenever:</b> Overview ₹ cards (CPL, cost-per-joined vs ₹3.4L), Reports one-pager. <b>Sees every number, enters nothing.</b></td></tr>
+<tr><td><b>Management</b></td><td><code>manager / manager123</code></td><td>Pipeline + ad spend + widget</td><td><b>Daily:</b> work the funnel in Leads, keep ⚙️ ad spend true so ₹ numbers stay honest.</td></tr>
+<tr><td><b>Admin Office</b></td><td><code>office / office123</code></td><td>Leads, chats, To-Do, follow-ups, consent, widget, accreditation data entry</td><td><b>Daily:</b> clear the call list, tick consent before any WhatsApp, book visits.</td></tr>
 </table>
-<div class="box amber">⚠️ Default passwords are for day 1 only — every role must change theirs (Reports ▸ Staff &amp; Access). Principal can add more staff users (counselor/placement/iqac/director roles) in the same card.</div>
+<div class="box amber">⚠️ Default passwords are for day 1 only — every role must change theirs (❓ Help → <b>Change my password</b>). Only the <b>Owner</b> (Admin Key) creates or resets logins — in 👤 Staff &amp; Roles. Forgot a password? The Owner resets it in one click.</div>
 
 <h2 id="s16"><span class="no">Rp</span>Report generators — what exists &amp; when to use</h2>
 <table>

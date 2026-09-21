@@ -16,6 +16,87 @@ logged, not sent; a deterministic bilingual brain answers everything.
 
 ---
 
+## What's new in v0.8.2 — Referrals & Imports
+
+| Feature | Where | What it does |
+|---|---|---|
+| 💸 **Referral commissions** | Lead drawer + Reports | Attribute a lead to a staff member with an agreed ₹ per joined admission. DUE auto-computes when the lead reaches **joined**; settle with an audited **Mark paid**. Money roles only — counselors never see amounts. |
+| ⬆ **Leads CSV import** | Leads tab | Columns: name, phone, town, branch, source, campaign, rank. Duplicates skipped; imported parents get **no consent** (never auto-messaged — DPDP safe). |
+| ⬇/⬆ **Knowledge Pack import** | Knowledge tab | Restore `knowledge_pack.json` from any backup ZIP (Owner/Principal). Your college data moves with you. |
+| 📦 **Backup ZIP +** | Settings | Now includes `mock_interviews.csv` (student practice evidence) alongside leads/careers/conversations/CKP. |
+
+QA: **128/128**. All 15 dashboard tabs render-tested error-free; widget + `/practice` re-verified.
+
+## What's new in v0.8 — Reach
+
+| Feature | Where | What it does |
+|---|---|---|
+| 📣 **Broadcast** | Follow-ups tab | One message → every **consented** parent still in the pipeline (Owner/Principal/Management/Office). Audience counter, confirm dialog, fully logged (audit + per-lead FollowUpLog). Honest-text policy enforced in the UI copy. |
+| 🧪 **WhatsApp test-send** | Settings | Send a test to your own mobile. Mock mode says "logged, not sent" honestly; with `WHATSAPP_TOKEN` + `WHATSAPP_PHONE_ID` env vars it goes **live** — no code change. |
+| 🪑 **Honest seat answers** | Widget/chat | "Seats available aa?" → approved intake table (cited), joined-so-far, counselling reality ("nobody outside the office can promise a seat") → campus-visit CTA. Rank questions still route to the rank advisor. |
+
+QA: **116/116**.
+
+## What's new in v0.7.2 — Student Practice Pass
+
+**Mock interviews now run two ways:**
+1. **Office-led** (staff + student in the lab): speaking interviewer, voice answers, panel probes, strict mode.
+2. **Student self-practice**: the office issues an **8-character Practice Pass** (Careers → 🎟️ Practice Passes card) → student opens **/practice** on ANY phone → unlimited voice mocks. Students see only their own history; every attempt appears in Careers (tagged self-practice) and files NAAC 5.1.2 evidence. Codes deactivate in one tap.
+
+QA: **110/110**.
+
+## What's new in v0.7 — Growth Edition
+
+| Feature | Where | What it does |
+|---|---|---|
+| 🎙️ **Realistic AI interviews** | Careers | Interviewer **speaks questions aloud** (en-IN), student answers by **voice**, weak answers trigger **adaptive panel follow-up probes** ("walk me through it step by step"), strict-panel mode (−0.5 scoring) — zero third-party APIs, works offline |
+| 🏫 **Comparison Pack** | Knowledge Pack | Owner curates nearby colleges' PUBLIC numbers (fee, placements %, closing ranks + source). When a parent asks "RIT vs X?", the AI compares honestly, credits their strengths, states your edge — then books a campus visit. Unlisted colleges → honest refusal, never invented |
+| 📢 **/sell sales website** | `/sell` (public) | Full premium landing page: live AI demo embedded, competitor comparison table (Meritto/LeadSquared/Classe365), pricing cards with WhatsApp CTAs, FAQ — point colleges here |
+
+QA: **100/100**.
+
+## What's new in v0.6 — Staff & Roles ("Many Hands")
+
+**One Admin Key is no longer a bottleneck — every person gets their own login:**
+
+| Role | What they get |
+|---|---|
+| 🟢 Owner (Admin Key) | Everything + the only one who creates staff logins |
+| 🟣 Principal | Full view + Monday digest + approvals — **no** staff admin |
+| 🟠 Director | All numbers & ₹ ROI — sees everything, enters nothing |
+| 🔵 Management | Pipeline + ad spend + widget |
+| 🩵 Admin Office | Daily work: leads, calls, visits, consent |
+| ⚪ Counselor | Own leads, AI chats, to-do — nothing else |
+| 🩷 Placement Officer | Careers, mocks, NAAC evidence |
+| 🟢 IQAC | Accreditation & marks |
+
+- **🎚️ Allocate:** Owner ticks exactly which screens each person sees (per-person override of role presets) — applies on their very next click
+- **🔑 Credentials flow:** create → temp password shown once → one-tap **send on WhatsApp**
+- **Last-login tracking** + deactivate (instant lockout) + owner-only password resets
+- **Login page rebuilt:** staff path vs Owner/Admin-Key path, in plain words + Telugu
+- **❓ Help tab:** "What is SeatSetu", your-day-in-3-steps **per role**, glossary (Lead, Consent, CPL/CPJ, AQAR…), self-service password change
+- **Role landing:** counselors land on To-Do, placement on Careers, IQAC on Accred — everyone lands where they work
+
+QA: **92/92**. Settings (₹, digest, backup) now open to Director/Management too — read/edit money, never staff.
+
+## What's new in v0.5 — Enterprise Edition
+
+**Premium layer on top of v0.4's "AI that ACTS":**
+
+| Feature | Where | What it does |
+|---|---|---|
+| 🎯 Lead-360° drawer | Leads → click any lead | Full story: every message (parent/AI), follow-up, task — color-coded timeline + assign to counselor |
+| 💰 ₹ ROI analytics | Overview | Cost-per-lead, cost-per-JOINED-student vs ₹3.4L seat lifetime value, 7-day trend, conversion % |
+| 🎤 Parent voice input | Widget | Telugu (te-IN) speech-to-text in Chrome/Edge — parents speak, AI answers |
+| 👍👎 Answer ratings | Widget | Parents rate every 4th AI answer; quality loop |
+| 📮 Monday digest | Settings | One-tap plain-language WhatsApp briefing for the principal |
+| ⚙️ Settings console | Settings | Ad-spend per source (feeds ROI), system status, backup |
+| 📦 One-click backup | Settings | ZIP: leads/careers/conversations CSVs + Knowledge Pack JSON |
+| 🛡️ Chat rate-limiting | API | 40 msgs/60s per IP → 429; blocks flooding |
+| 📲 PWA install | Widget | Manifest + service worker — parents install the college on their phone |
+
+Settings tab is admin/principal-only. All v0.4 features unchanged. QA: **80/80**.
+
 ## Quickstart
 
 ```bash
@@ -149,3 +230,11 @@ Also available: direct `/widget/1` link, iframe page, and QR codes for hoardings
 
 ### Rank advisor (v0.3.1)
 Parent shares an EAPCET rank (English, Tenglish or Telugu script) → the counselor compares it against the college's approved last-year closing ranks and answers per branch: ✅ strong chance / 🟡 borderline / 🔴 tough — always with the honest "decided only in convener counseling" line and a campus-visit CTA. No prediction, no promises — approved CKP data only.
+
+
+## v0.4 — The AI that ACTS
+- **📅 Book campus visit** inside the parent chat: name + phone + date + branch → lead (`visit_booked`) + dated counselor task + document checklist reply. Invalid phones/dates rejected.
+- **📄 Brochure lead-gate**: parent's name+phone → auto-generated college PDF brochure (built live from the Knowledge Pack: courses/fees, hostels, buses, placements, key dates) + call task for the counselor.
+- **🎯 "What to do today"** — prescriptive next-best-actions on the dashboard: due follow-ups, human handoffs waiting, visits to confirm, hot leads going cold, AQAR countdown, careers nudge. Each with a Go→ button.
+- **✨ Reply Coach** — one-click suggested next reply per conversation (LLM if a key is set, else topic playbook), stage-aware, guardrail-safe.
+- QA matrix: **71/71**. Brochure endpoint is public; all staff endpoints remain gated.

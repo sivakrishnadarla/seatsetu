@@ -56,7 +56,7 @@ def careers_rep(db, col: College, days=None):
         a["n"] += 1
         a["sum"] += m.overall or 0
         if (m.overall or 0) < 2.5:
-            weak.append({"student": m.student, "branch": b, "score": m.overall, "at": str(m.created_at)[:16]})
+            weak.append({"student": m.student_name, "branch": b, "score": m.overall, "at": str(m.created_at)[:16]})
     for b in by_branch:
         by_branch[b] = {"n": by_branch[b]["n"], "avg": round(by_branch[b]["sum"] / by_branch[b]["n"], 2)}
     return {"interviews": len(rows), "avg": round(sum(scores) / len(scores), 2) if scores else 0,
@@ -112,10 +112,10 @@ def leads_csv(db, col: College) -> str:
 def careers_csv(db, col: College) -> str:
     rows = (db.query(MockInterview).filter(MockInterview.college_id == col.id)
               .order_by(MockInterview.id).all())
-    out = ["id,student,branch,overall,strengths,gaps,at"]
+    out = ["id,student,roll,branch,overall,at"]
     for m in rows:
-        out.append(",".join([str(m.id), f'"{_e(m.student)}"', f'"{_e(m.branch)}"',
-                             str(m.overall or 0), f'"{_e(m.strengths)}"', f'"{_e(m.gaps)}"',
+        out.append(",".join([str(m.id), f'"{_e(m.student_name)}"', f'"{_e(m.roll)}"',
+                             f'"{_e(m.branch)}"', str(m.overall or 0),
                              str(m.created_at or "")[:16]]))
     return "\n".join(out)
 
@@ -181,3 +181,28 @@ Attainment runs: <b>{ac['attainment_runs']}</b> · Question papers: <b>{ac['ques
 WhatsApp follow-ups sent: <b>{a['followups_sent']}</b> ({a['followups_live']} live)</div>
 <div class="foot"><b>SeatSetu</b> — Admissions · Accred · Careers · A product by <b>Pooja Soft Solutions</b>, Ongole · AP<br>
 📞 92471 05525 · 💬 WhatsApp 75691 92211 · info@poojasoftsolutions.com</div></div></body></html>"""
+
+
+def weekly_digest(db, col: College):
+    """The principal's Monday briefing — last 7 days, plain language."""
+    a = admissions(db, col, days=7)
+    c = careers_rep(db, col, days=7)
+    cp = compliance(db, col)
+    ac = accred_summary(db, col)
+    joined = a["funnel"].get("joined", 0)
+    visits = a["funnel"].get("visit_booked", 0) + a["funnel"].get("visited", 0)
+    lines = []
+    lines.append(f"🟢 {a['total_leads']} new parent enquiries this week — AI answered every one within 60 seconds.")
+    lines.append(f"📅 {visits} campus visit(s) booked/started. {joined} seat(s) joined 🎓" if (visits or joined)
+                 else "📅 No visits booked yet — counselors should call the interested list today.")
+    if c["interviews"]:
+        lines.append(f"💼 {c['interviews']} mock interviews · avg {c['avg']}/5 · {len(c['below_2_5'])} student(s) need coaching.")
+    lines.append(f"🎯 AQAR readiness {ac['readiness_pct']}% ({ac['evidence_collected']}/{ac['evidence_total']} evidence items).")
+    lines.append(f"🛡️ AI {('PAUSED by kill switch' if cp['kill_switch'] else 'running normally')} · "
+                 f"{cp['consents_granted']}/{cp['consents_total']} parent consents on record.")
+    top = sorted(a["sources"].items(), key=lambda x: -x[1]["leads"])[:1]
+    if top and top[0][1]["leads"]:
+        lines.append(f"📌 Best source this week: {top[0][0]} ({top[0][1]['leads']} leads).")
+    return {"college": col.name, "week": "last 7 days", "headline": lines,
+            "numbers": {"leads": a["total_leads"], "visits": visits, "joined": joined,
+                        "interviews": c["interviews"], "readiness_pct": ac["readiness_pct"]}}
