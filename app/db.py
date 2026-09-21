@@ -382,6 +382,11 @@ def ensure_ready():
     if not _ready:
         from .seed import seed_if_empty
         seed_if_empty()
+        try:  # v0.8.2: fictional Demo College (SSDC) for management demos — idempotent
+            from .demo_college import seed_if_missing
+            seed_if_missing()
+        except Exception:
+            pass
         try:  # lightweight migrations for DBs created before v0.5
             from sqlalchemy import text as _tx
             with engine.begin() as c:

@@ -16,6 +16,15 @@ logged, not sent; a deterministic bilingual brain answers everything.
 
 ---
 
+## What's new in v0.8.3 — Demo College (show the dashboard, not just the chat)
+
+| Feature | Where | What it does |
+|---|---|---|
+| 🏫 **SeatSetu Demo College (SSDC)** | Auto-seeded on every fresh deployment | A fully-worked FICTIONAL tenant (EAPCET code `SSDC1`): 20 leads across **all 7 sources** and every funnel stage with real scores, 8 follow-ups DUE NOW, 2 bilingual chat transcripts (incl. the honest trap-question refusal), 3 staff tasks, competitor comparison pack, AQAR evidence, practice pass `DEMO2026`, and per-person staff logins. Switch to **SSDC** in the college selector and the Command Center is instantly demo-ready for a Principal/Director — numbers, funnel, ROI and to-dos all populated. |
+| 👤 **Demo staff logins** | Login page | `ssdc.director / director-2026` (Director — sees everything, edits nothing) · `ssdc.lakshmi / lakshmi-2026` (Counselor) · `ssdc.ravi / ravi-2026` (Office) · `ssdc.iqac / iqac-2026` (IQAC). Hand these out during demos so management logs in as THEMSELVES with role-wise tabs. |
+
+Demo data is clearly fictional ("SeatSetu Demo College of Engineering, Vijayawada") and never mixes with real colleges: leads, transcripts and knowledge chunks are tenant-scoped to SSDC only.
+
 ## What's new in v0.8.2 — Referrals & Imports
 
 | Feature | Where | What it does |
