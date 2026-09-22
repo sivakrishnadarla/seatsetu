@@ -8,7 +8,7 @@ import os
 
 import os as _os
 
-from sqlalchemy import (Boolean, Column, DateTime, Float, ForeignKey, Integer,
+from sqlalchemy import (LargeBinary, Boolean, Column, DateTime, Float, ForeignKey, Integer,
                         JSON, String, Text, create_engine)
 from sqlalchemy.orm import DeclarativeBase, relationship, sessionmaker
 
@@ -229,6 +229,20 @@ class EvidenceItem(Base):
     owner = Column(String(120), default="")
     status = Column(String(20), default="pending")    # pending | collected | na
     file_note = Column(String(300), default="")       # filename or drive link
+    created_at = Column(DateTime, default=utcnow)
+
+
+class EvidenceFile(Base):
+    """A real uploaded document (scan/photo/PDF/Excel) for an AQAR evidence item.
+    Stored in the DB (works on serverless); max size enforced at the endpoint."""
+    __tablename__ = "evidence_files"
+    id = Column(Integer, primary_key=True)
+    college_id = Column(Integer, ForeignKey("colleges.id"), index=True)
+    evidence_id = Column(Integer, ForeignKey("evidence_items.id"), index=True)
+    filename = Column(String(200))
+    content_type = Column(String(100), default="application/octet-stream")
+    size = Column(Integer, default=0)
+    content = Column(LargeBinary)
     created_at = Column(DateTime, default=utcnow)
 
 

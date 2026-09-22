@@ -16,6 +16,16 @@ logged, not sent; a deterministic bilingual brain answers everything.
 
 ---
 
+## What's new in v0.8.4 — Accred Vault & AQAR Dossier
+
+| Feature | Where | What it does |
+|---|---|---|
+| 📎 **Real document uploads** | SeatSetu Accred → evidence list | Upload the actual scan/photo/PDF (max 8 MB) on any AQAR item — it auto-marks the item **done**. Files download anytime with one tap. |
+| ⬇ **AQAR Dossier ZIP** | SeatSetu Accred → green button | ONE click → NAAC-ready pack: `00_SUMMARY.csv` (every criterion, owner, status, links), `attainment/` (CO/PO reports from your marks Excel, TXT + CSV), `question_papers/`, `evidence/<criterion>/` (your uploaded documents). The IQAC downloads this and submits on the NAAC portal. |
+| ➕ **Seed standard 18** | SeatSetu Accred | One tap creates the checklist rows for all standard AQAR criteria. |
+
+> Honest note: SeatSetu PREPARES the dossier — it never submits to NAAC (no such integration exists). The college's IQAC submits under its own signature.
+
 ## What's new in v0.8.3 — Demo College (show the dashboard, not just the chat)
 
 | Feature | Where | What it does |

@@ -219,6 +219,9 @@
     <div class="row">
       <div class="card" style="flex:1.3;min-width:340px">
         <h3>AQAR evidence checklist (7 criteria)</h3>
+        <div class="row" style="margin-bottom:8px"><button class="btn grn" onclick="location.href=`/api/colleges/${cid}/accred/dossier.zip`">⬇ Download AQAR dossier ZIP</button>
+        <button class="btn" onclick="seedAqar()">＋ Seed the standard 18 criteria</button></div>
+        <div class="muted" style="margin-bottom:6px">Upload the real document (scan/photo/PDF, max 8 MB) on each item — it auto-marks <b>done</b>. The dossier ZIP packs attainment reports + every uploaded file + the index, ready for the NAAC portal.</div>
         <table><tbody id="aqarBody"></tbody></table>
         <div class="row" style="margin-top:10px">
           <input class="f" id="evCrit" placeholder="Criterion e.g. 5.1.2" style="max-width:130px">
@@ -594,7 +597,14 @@ async function loadAccred(){if(!cid)return;
    <div class="card"><h3>Attainment runs</h3><div class="big" id="runsCount">—</div><div class="muted">courses computed</div></div>`;
   $('#aqarBody').innerHTML=aq.items.map(i=>`<tr><td><code>${i.criterion}</code></td><td style="max-width:240px">${esc(i.desc)}</td><td>${i.status==='collected'?'<span class="tag ok">done</span>':i.status==='partial'?'<span class="tag warn">partial</span>':'<span class="tag bad">pending</span>'}</td></tr>`).join('');
   const ev=await api(`/api/colleges/${cid}/accred/evidence`);
-  $('#evList').innerHTML=ev.map(e=>`<div>• <code>${esc(e.criterion)}</code> ${esc(e.title)} ${e.status!=='pending'?'✅':''}</div>`).join('')||'<div>No evidence items yet.</div>';
+  $('#evList').innerHTML=ev.map(e=>`<div style="border-bottom:1px dashed var(--line);padding:6px 0">
+    <b><code>${esc(e.criterion)}</code> ${esc(e.title)}</b> ${e.status==='collected'?'<span class="tag ok">done</span>':`<span class="tag bad">${e.status}</span>`}
+    <div class="muted" style="font-size:11.5px">${e.owner?('Owner: '+esc(e.owner)+' · '):''}${esc(e.file_note||'')}</div>
+    ${(e.files||[]).map(f=>`<a href="/api/accred/evidence/file/${f.id}" style="font-size:12px;color:var(--acc2)">📎 ${esc(f.filename)} (${Math.round(f.size/1024)} KB)</a>`).join(' ')}
+    <div style="margin-top:4px"><input type="file" id="uf${e.id}" style="display:none" onchange="uploadEvidence(${e.id},this)">
+    <button class="btn ghost" style="padding:4px 10px;font-size:12px" onclick="document.getElementById('uf${e.id}').click()">📎 Upload document</button>
+    ${e.status!=='collected'?`<button class="btn ghost" style="padding:4px 10px;font-size:12px" onclick="markCollected(${e.id})">✅ Mark collected</button>`:''}</div>
+  </div>`).join('')||'<div>No evidence items yet — tap “Seed the standard 18 criteria”.</div>';
   const regs=await api(`/api/colleges/${cid}/accred/regs`);
   $('#regSel').innerHTML=regs.map(r=>`<option value="${r.id}">${esc(r.course_name)} (${esc(r.code)})</option>`).join('')||'<option>No course registrations</option>';
   const runs=await api(`/api/colleges/${cid}/accred/runs`);
@@ -603,6 +613,13 @@ async function loadAccred(){if(!cid)return;
 async function addEvidence(){const c=$('#evCrit').value.trim(),t=$('#evTitle').value.trim();if(!c||!t)return;
   await api(`/api/colleges/${cid}/accred/evidence`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({criterion:c,title:t})});
   toast('Evidence added — mark it collected when the file is in the vault');loadAccred()}
+async function seedAqar(){const r=await api(`/api/colleges/${cid}/accred/evidence/seed-aqar`,{method:'POST'});toast(`Seeded ${r.created} standard criteria`);loadAccred()}
+async function markCollected(id){await api(`/api/accred/evidence/${id}/status`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:'collected'})});loadAccred()}
+async function uploadEvidence(id,inp){const f=inp.files[0];if(!f)return;
+  const fd=new FormData();fd.append('file',f);fd.append('filename',f.name);
+  const r=await fetch(`/api/accred/evidence/${id}/upload`,{method:'POST',body:fd});
+  if(!r.ok){const e=await r.json().catch(()=>({detail:'error'}));return toast('⚠️ '+e.detail)}
+  toast('Uploaded — item marked done. Dossier ZIP now includes it.');loadAccred()}
 async function uploadMarks(){const f=$('#marksFile').files[0];if(!f)return $('#attOut').textContent='Choose a file first';
   const regId=$('#regSel').value;if(!regId)return $('#attOut').textContent='No course registration selected';
   $('#attOut').innerHTML='<span class="spinner"></span> parsing & computing…';
